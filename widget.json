@@ -1,0 +1,66 @@
+{
+  "id": "com.sap.ic.quality.execview",
+  "version": "1.0.0",
+  "name": "IC Quality Dashboard \u2014 Executive View",
+  "description": "Invoice Capture Quality Dashboard for SAC Stories. Connects to AM_IC_QUALITY_DASHBOARD, AM_IC_ESCALATION, and AM_IC_COMBINED_SUMMARY in Datasphere.",
+  "newInstancePrefix": "ICQDashboard",
+  "icon": "sap-icon://chart-bar",
+  "vendor": "SAP Quality Intelligence",
+  "license": "Internal",
+  "webcomponents": [
+    {
+      "kind": "main",
+      "tag": "ic-quality-dashboard",
+      "url": "https://Christwell4743.github.io/sac-widgets/widget.html",
+      "integrity": "",
+      "ignoreIntegrity": true
+    }
+  ],
+  "properties": {},
+  "methods": {},
+  "events": {},
+  "dataBindings": {
+    "qualityData": {
+      "feeds": [
+        {
+          "id": "dimensions",
+          "description": "Dimensions \u2014 add: DATE_REVIEWED, LOCATION",
+          "type": "dimension"
+        },
+        {
+          "id": "measures",
+          "description": "Measures \u2014 add: INVOICE_LEVEL_RATING, COUNT",
+          "type": "mainStructureMember"
+        }
+      ]
+    },
+    "escalationData": {
+      "feeds": [
+        {
+          "id": "dimensions",
+          "description": "Dimensions \u2014 add: DATE_REVIEWED, LOCATION",
+          "type": "dimension"
+        },
+        {
+          "id": "measures",
+          "description": "Measures \u2014 add: ESCALATION_COUNT, IF_SCORE_SHOULD_CHANGE_1_0",
+          "type": "mainStructureMember"
+        }
+      ]
+    },
+    "summaryData": {
+      "feeds": [
+        {
+          "id": "dimensions",
+          "description": "Dimensions \u2014 add: REVIEW_DATE, LOCATION",
+          "type": "dimension"
+        },
+        {
+          "id": "measures",
+          "description": "Measures \u2014 add: QS_REVIEW_COUNT, EDW_INVOICE_COUNT, REVIEW_RATE",
+          "type": "mainStructureMember"
+        }
+      ]
+    }
+  }
+}

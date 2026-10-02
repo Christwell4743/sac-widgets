@@ -1,0 +1,1357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>IC Quality Dashboard — Executive View</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.min.js"></script>
+<style>
+@font-face{font-family:"72";src:url("https://ui5.sap.com/resources/sap/ui/core/themes/base/fonts/72-Regular.woff2") format("woff2");font-weight:400;}
+@font-face{font-family:"72";src:url("https://ui5.sap.com/resources/sap/ui/core/themes/base/fonts/72-Bold.woff2") format("woff2");font-weight:700;}
+@font-face{font-family:"72";src:url("https://ui5.sap.com/resources/sap/ui/core/themes/base/fonts/72-Light.woff2") format("woff2");font-weight:300;}
+@font-face{font-family:"72 Brand";src:url("https://ui5.sap.com/resources/sap/ui/core/themes/base/fonts/72-Regular.woff2") format("woff2");font-weight:400;}
+@font-face{font-family:"72 Brand";src:url("https://ui5.sap.com/resources/sap/ui/core/themes/base/fonts/72-Bold.woff2") format("woff2");font-weight:700;}
+:root{
+  --sap-blue:#1B90FF;--sap-hyperlink:#0070F2;--sap-navy:#002A86;--sap-deepnavy:#00144A;
+  --sap-lightblue:#89D1FF;--sap-lightsky:#D1EFFF;--sap-shell:#354A5E;
+  --sap-white:#FFFFFF;--sap-black:#000000;
+  --sap-gray-dark:#666666;--sap-gray-mid:#999999;--sap-gray-light:#EAECEE;
+  --rag-blue:#0070F2;--rag-green:#188918;--rag-amber:#C35500;--rag-red:#D20A0A;
+  --rag-blue-bg:#E8F3FF;--rag-green-bg:#E6F4E6;--rag-amber-bg:#FFF2E6;--rag-red-bg:#FFEAEA;
+  --dv1:#5899DA;--dv2:#E8743B;--dv3:#19A979;--dv4:#ED4A7B;--dv5:#945ECF;--dv6:#13A4B4;--dv7:#F0AB00;--dv8:#6C8893;
+  --bg:#F5F6F7;--surface:#FFFFFF;--border:#D9D9D9;--border2:#E8EAED;
+  --ink:#1D2D3E;--ink2:#6A6D70;--ink3:#8D9195;--rad:8px;
+  font-family:"72","72 Brand",system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
+  font-size:14px;line-height:1.5;
+}
+*{box-sizing:border-box;margin:0;padding:0;}html{scroll-behavior:smooth;}body{background:var(--bg);color:var(--ink);}
+.shell{position:sticky;top:0;z-index:300;background:var(--sap-shell);height:44px;display:flex;align-items:center;padding:0 1.25rem;gap:.65rem;box-shadow:0 2px 8px rgba(0,0,0,.18);}
+.sap-sq{background:#fff;color:var(--sap-shell);font-weight:700;font-size:11px;padding:2px 6px;border-radius:2px;letter-spacing:.5px;flex-shrink:0;}
+.shell-pipe{color:rgba(255,255,255,.2);font-size:18px;font-weight:100;}
+.shell-app{color:rgba(255,255,255,.88);font-size:13px;font-weight:700;}
+.shell-sub{color:rgba(255,255,255,.45);font-size:12px;}
+.shell-sp{flex:1;}
+.shell-date{color:rgba(255,255,255,.45);font-size:12px;}
+.live-chip{display:inline-flex;align-items:center;gap:.3rem;background:rgba(255,255,255,.1);padding:.18rem .5rem;border-radius:10px;font-size:11px;color:rgba(255,255,255,.75);}
+.live-dot{width:8px;height:8px;border-radius:50%;background:#188918;display:inline-block;}
+.avatar{width:30px;height:30px;border-radius:50%;background:var(--dv7);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;}
+.titlebar{background:var(--sap-navy);padding:.85rem 1.5rem;display:flex;align-items:center;gap:1.25rem;}
+.tb-left{flex:1;}
+.tb-left h1{color:#fff;font-size:1.05rem;font-weight:700;margin-bottom:.1rem;}
+.tb-sub{color:rgba(255,255,255,.45);font-size:12px;}
+.tb-right{text-align:right;flex-shrink:0;}
+.tb-view-badge{display:inline-flex;align-items:center;gap:.3rem;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);padding:.25rem .65rem;border-radius:4px;font-size:12px;font-weight:700;color:#fff;}
+.tb-view-dot{width:7px;height:7px;border-radius:2px;background:var(--rag-blue);}
+.data-stamp{color:rgba(255,255,255,.5);font-size:12px;margin-top:.25rem;}
+.ragbar{background:#fff;border-bottom:2px solid var(--border2);padding:.42rem 1.5rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;}
+.rag-lbl{font-size:11px;color:var(--ink2);font-weight:700;text-transform:uppercase;letter-spacing:.5px;flex-shrink:0;}
+.rag-scale{display:flex;gap:.65rem;flex-wrap:wrap;align-items:center;}
+.rag-pill{display:inline-flex;align-items:center;gap:.28rem;font-size:12px;font-weight:600;padding:.15rem .5rem;border-radius:3px;}
+.rp-b{background:var(--rag-blue-bg);color:var(--rag-blue);}
+.rp-g{background:var(--rag-green-bg);color:var(--rag-green);}
+.rp-a{background:var(--rag-amber-bg);color:var(--rag-amber);}
+.rp-r{background:var(--rag-red-bg);color:var(--rag-red);}
+.rag-dot{width:8px;height:8px;border-radius:2px;flex-shrink:0;}
+.rag-sp{flex:1;}
+.fbar{background:#fff;border-bottom:1px solid var(--border2);padding:.45rem 1.5rem;display:flex;align-items:center;flex-wrap:wrap;gap:.45rem;position:sticky;top:44px;z-index:199;}
+.sl{font-size:11px;color:var(--ink2);font-weight:700;text-transform:uppercase;letter-spacing:.5px;white-space:nowrap;flex-shrink:0;}
+.fsel{border:1px solid var(--border);background:#fff;color:var(--ink);padding:.2rem .45rem;border-radius:4px;font-size:12px;font-family:inherit;cursor:pointer;min-width:130px;}
+.fsel:focus{outline:2px solid var(--sap-hyperlink);outline-offset:1px;}
+.fdiv{color:var(--border2);font-size:16px;margin:0 .1rem;}
+.fsp{flex:1;}
+.fcast-note{display:none;align-items:center;gap:.25rem;background:#F3E8FF;color:#5D36FF;padding:.18rem .5rem;border-radius:4px;font-size:11px;font-weight:600;}
+.fcast-note.show{display:inline-flex;}
+.filter-info{font-size:11px;color:var(--ink2);background:var(--bg);padding:.18rem .45rem;border-radius:4px;white-space:nowrap;}
+.dq-bar{background:#FFFBF0;border-bottom:1px solid #F0D070;padding:.32rem 1.5rem;display:flex;flex-wrap:wrap;gap:.55rem;align-items:center;}
+.dq-item{display:flex;align-items:center;gap:.28rem;font-size:11px;color:var(--ink2);}
+.dq-lbl{font-weight:700;color:var(--ink);white-space:nowrap;}
+.dq-badge{display:inline-flex;padding:.08rem .35rem;border-radius:3px;font-size:10px;font-weight:700;}
+.dq-badge.partial{background:var(--rag-amber-bg);color:var(--rag-amber);}
+.dq-badge.complete{background:var(--rag-blue-bg);color:var(--rag-blue);}
+.dq-div{color:var(--border2);font-size:14px;}
+.main{padding:1rem 1.5rem;max-width:1600px;margin:0 auto;}
+.hero{background:linear-gradient(135deg,var(--sap-deepnavy) 0%,var(--sap-navy) 55%,#003DB0 100%);border-radius:var(--rad);padding:1.15rem 1.5rem;margin-bottom:1rem;color:#fff;position:relative;overflow:hidden;}
+.hero::before{content:"";position:absolute;right:-50px;top:-50px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,.03);}
+.hero-eye{font-size:11px;text-transform:uppercase;letter-spacing:.8px;color:rgba(255,255,255,.5);margin-bottom:.25rem;}
+.hero-h{font-size:1.5rem;font-weight:700;color:#fff;line-height:1.2;margin-bottom:.2rem;}
+.hero-s{font-size:12px;color:rgba(255,255,255,.55);}
+.hero-stats{display:flex;gap:1.5rem;margin-top:.9rem;flex-wrap:wrap;}
+.hs{border-left:2px solid rgba(255,255,255,.18);padding-left:.8rem;}
+.hs-v{font-size:1.2rem;font-weight:700;color:#fff;}
+.hs-l{font-size:11px;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.3px;}
+.hero-rag{display:inline-flex;align-items:center;gap:.35rem;margin-top:.6rem;padding:.28rem .65rem;border-radius:4px;font-size:12px;font-weight:700;background:rgba(255,255,255,.12);}
+.hrd{width:8px;height:8px;border-radius:2px;flex-shrink:0;}
+.krow{display:grid;grid-template-columns:repeat(5,1fr);gap:.7rem;margin-bottom:1rem;}
+.kc{background:var(--surface);border:1px solid var(--border2);border-radius:var(--rad);padding:.82rem 1rem;position:relative;overflow:hidden;transition:box-shadow .14s;}
+.kc:hover{box-shadow:0 3px 14px rgba(0,0,0,.09);}
+.kc::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:var(--border);}
+.kc.rb::before{background:var(--rag-blue);}.kc.rg::before{background:var(--rag-green);}
+.kc.ra::before{background:var(--rag-amber);}.kc.rr::before{background:var(--rag-red);}
+.kl{font-size:12px;color:var(--ink2);margin-bottom:.28rem;font-weight:600;}
+.kv{font-size:1.28rem;font-weight:700;color:var(--ink);}
+.kv.rb{color:var(--rag-blue)!important;}.kv.rg{color:var(--rag-green)!important;}
+.kv.ra{color:var(--rag-amber)!important;}.kv.rr{color:var(--rag-red)!important;}
+.ks{font-size:12px;color:var(--ink3);margin-top:.18rem;}
+.kdelta{display:inline-flex;align-items:center;gap:.18rem;font-size:12px;font-weight:700;margin-top:.28rem;}
+.kdelta.up{color:var(--rag-green);}.kdelta.dn{color:var(--rag-red);}.kdelta.nt{color:var(--ink3);}
+.kbadge{display:inline-flex;align-items:center;padding:.1rem .38rem;border-radius:3px;font-size:11px;font-weight:700;margin-top:.28rem;}
+.kbadge.rb{background:var(--rag-blue-bg);color:var(--rag-blue);}
+.kbadge.rg{background:var(--rag-green-bg);color:var(--rag-green);}
+.kbadge.ra{background:var(--rag-amber-bg);color:var(--rag-amber);}
+.kbadge.rr{background:var(--rag-red-bg);color:var(--rag-red);}
+.card{background:var(--surface);border:1px solid var(--border2);border-radius:var(--rad);padding:1rem;margin-bottom:1rem;transition:box-shadow .14s;}
+.card:hover{box-shadow:0 2px 12px rgba(0,0,0,.07);}
+.card-h{font-size:14px;font-weight:700;color:var(--ink);margin-bottom:.72rem;display:flex;align-items:center;gap:.45rem;}
+.card-sub{font-size:12px;color:var(--ink2);font-weight:400;}
+.card-note{font-size:12px;color:var(--ink3);margin-top:.5rem;font-style:italic;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;}
+.g23{display:grid;grid-template-columns:2fr 1fr;gap:1rem;margin-bottom:1rem;}
+.ch-wrap{position:relative;width:100%;}.ch-wrap canvas{display:block;width:100%!important;}
+.ipanel{background:linear-gradient(135deg,#000D1A 0%,var(--sap-deepnavy) 40%,var(--sap-navy) 100%);border-radius:var(--rad);padding:1rem 1.2rem;margin-bottom:1rem;}
+.ip-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem;}
+.ip-badge{display:inline-flex;align-items:center;gap:.3rem;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);padding:.18rem .55rem;border-radius:12px;font-size:11px;font-weight:700;color:rgba(255,255,255,.8);text-transform:uppercase;letter-spacing:.5px;}
+.ip-dot{width:6px;height:6px;border-radius:50%;background:var(--sap-blue);}
+.ip-per{font-size:12px;color:rgba(255,255,255,.4);margin-bottom:.55rem;}
+.ins-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.7rem;}
+.ins{background:rgba(255,255,255,.07);border-radius:6px;padding:.75rem .9rem;border-left:3px solid var(--rag-blue);transition:background .15s;}
+.ins:hover{background:rgba(255,255,255,.11);}
+.ins.warn{border-left-color:var(--dv7);}.ins.crit{border-left-color:var(--rag-red);}
+.ins.pos{border-left-color:var(--rag-green);}.ins.info{border-left-color:var(--sap-lightblue);}
+.ins.amber{border-left-color:var(--rag-amber);}
+.ins-t{font-size:12px;font-weight:700;color:rgba(255,255,255,.92);margin-bottom:.22rem;display:flex;align-items:flex-start;gap:.3rem;line-height:1.35;}
+.ins-b{font-size:12px;color:rgba(255,255,255,.58);line-height:1.5;}
+.ins-b strong{color:rgba(255,255,255,.85);}
+.ins-tag{display:inline-flex;padding:.05rem .32rem;border-radius:3px;font-size:10px;font-weight:700;background:rgba(255,255,255,.12);color:rgba(255,255,255,.8);margin-left:.25rem;}
+.narrative{font-size:13px;line-height:1.8;color:var(--ink);}
+.narrative p{margin-bottom:.55rem;padding:.45rem .75rem;border-left:3px solid var(--sap-hyperlink);background:var(--rag-blue-bg);border-radius:0 4px 4px 0;}
+.narrative p:last-child{margin-bottom:0;}
+.narrative strong{color:var(--sap-navy);}
+.srow{display:flex;align-items:center;gap:.55rem;padding:.32rem 0;border-bottom:1px solid var(--border2);}
+.srow:last-child{border-bottom:none;}
+.sc-code{font-size:12px;font-weight:700;color:var(--ink);width:34px;flex-shrink:0;}
+.sc-name{font-size:12px;color:var(--ink2);width:64px;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.sc-track{flex:1;background:var(--bg);border-radius:4px;height:14px;overflow:hidden;min-width:60px;}
+.sc-fill{height:100%;border-radius:4px;transition:width .5s ease;}
+.sc-pct{font-size:12px;font-weight:700;width:52px;text-align:right;flex-shrink:0;}
+.sc-badge{padding:.08rem .32rem;border-radius:3px;font-size:11px;font-weight:700;color:#fff;flex-shrink:0;}
+.sc-badge.rb{background:var(--rag-blue);}.sc-badge.rg{background:var(--rag-green);}
+.sc-badge.ra{background:var(--rag-amber);}.sc-badge.rr{background:var(--rag-red);}
+.fcbanner{background:linear-gradient(135deg,#1a0d3a,#5D36FF);border-radius:var(--rad);padding:.88rem 1.2rem;margin-bottom:1rem;display:flex;align-items:center;gap:1.2rem;}
+.fc-val{font-size:1.5rem;font-weight:700;color:#fff;flex-shrink:0;}
+.fc-narr{font-size:12px;color:rgba(255,255,255,.68);line-height:1.5;flex:1;}
+.fc-eye{font-size:11px;opacity:.55;text-transform:uppercase;letter-spacing:.5px;margin-bottom:.12rem;color:#fff;}
+.rec-list{display:flex;flex-direction:column;gap:.55rem;}
+.rec-item{background:var(--surface);border:1px solid var(--border2);border-radius:6px;padding:.72rem 1rem;display:flex;gap:.7rem;align-items:flex-start;}
+.rec-num{width:22px;height:22px;border-radius:50%;background:var(--sap-hyperlink);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;margin-top:1px;}
+.rec-title{font-size:13px;font-weight:700;color:var(--ink);margin-bottom:.18rem;}
+.rec-body{font-size:12px;color:var(--ink2);line-height:1.45;}
+.rec-tags{margin-top:.32rem;display:flex;flex-wrap:wrap;gap:.22rem;}
+.rtag{display:inline-flex;padding:.08rem .38rem;border-radius:3px;font-size:11px;font-weight:600;}
+.rtag.blue{background:var(--rag-blue-bg);color:var(--rag-blue);}
+.rtag.amber{background:var(--rag-amber-bg);color:var(--rag-amber);}
+.rtag.green{background:var(--rag-green-bg);color:var(--rag-green);}
+.rtag.red{background:var(--rag-red-bg);color:var(--rag-red);}
+.rtag.navy{background:var(--sap-lightsky);color:var(--sap-navy);}
+.exc-banner{background:var(--rag-amber-bg);border:1px solid var(--rag-amber);border-radius:var(--rad);padding:.72rem 1rem;margin-bottom:1rem;display:flex;align-items:center;gap:.5rem;font-size:13px;font-weight:700;color:var(--rag-amber);}
+.risk-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-bottom:1rem;}
+.risk-card{background:var(--surface);border:1px solid var(--border2);border-radius:var(--rad);padding:.82rem 1rem;border-left:4px solid var(--rag-red);}
+.risk-card.warn{border-left-color:var(--rag-amber);}.risk-card.info{border-left-color:var(--sap-lightblue);}
+.risk-title{font-size:13px;font-weight:700;color:var(--ink);margin-bottom:.18rem;}
+.risk-body{font-size:12px;color:var(--ink2);line-height:1.45;}
+.stbl{width:100%;border-collapse:collapse;font-size:13px;}
+.stbl thead th{background:var(--bg);color:var(--ink2);text-transform:uppercase;font-size:11px;letter-spacing:.45px;padding:.48rem .72rem;text-align:left;border-bottom:2px solid var(--border);font-weight:700;white-space:nowrap;}
+.stbl tbody td{padding:.48rem .72rem;border-bottom:1px solid var(--border2);font-size:12px;}
+.stbl tbody tr:last-child td{border-bottom:none;}
+.stbl tbody tr:hover td{background:#F8F9FB;}
+.stbl .num{text-align:right;font-variant-numeric:tabular-nums;font-weight:600;}
+.stbl .center{text-align:center;}
+.hcell{display:inline-block;padding:.18rem .38rem;border-radius:3px;font-size:12px;font-weight:600;min-width:54px;text-align:center;}
+.hcell.rb{background:var(--rag-blue-bg);color:var(--rag-blue);}
+.hcell.rg{background:var(--rag-green-bg);color:var(--rag-green);}
+.hcell.ra{background:var(--rag-amber-bg);color:var(--rag-amber);}
+.hcell.rr{background:var(--rag-red-bg);color:var(--rag-red);}
+.hcell.na{background:var(--bg);color:var(--ink3);}
+.tag{display:inline-flex;padding:.1rem .4rem;border-radius:3px;font-size:12px;font-weight:700;}
+.tag.blue{background:var(--rag-blue-bg);color:var(--rag-blue);}
+.tag.navy{background:var(--sap-lightsky);color:var(--sap-navy);}
+.tag.green{background:var(--rag-green-bg);color:var(--rag-green);}
+.tag.amber{background:var(--rag-amber-bg);color:var(--rag-amber);}
+.tag.purple{background:#F0E8FF;color:#5D36FF;}
+.sec-h{font-size:13px;font-weight:700;color:var(--ink);margin-bottom:.55rem;text-transform:uppercase;letter-spacing:.45px;display:flex;align-items:center;gap:.4rem;}
+abbr{cursor:help;border-bottom:1px dashed var(--ink3);text-decoration:none;}
+.divider{border:none;border-top:1px solid var(--border2);margin:.65rem 0;}
+.section-div{border:none;border-top:2px solid var(--border2);margin:1rem 0;opacity:.5;}
+.metric-toggle-btn{display:inline-flex;align-items:center;gap:.35rem;background:#fff;border:1px solid var(--border);border-radius:4px;padding:.22rem .65rem;font-size:12px;font-weight:600;color:var(--sap-hyperlink);cursor:pointer;font-family:inherit;transition:all .12s;}
+.metric-toggle-btn:hover{background:var(--rag-blue-bg);border-color:var(--sap-hyperlink);}
+.metric-panel{display:none;background:var(--surface);border:1px solid var(--border2);border-radius:var(--rad);padding:1.1rem 1.4rem;margin:.5rem 0 1rem;box-shadow:0 3px 12px rgba(0,0,0,.09);}
+.metric-panel.show{display:block;}
+.metric-panel-h{font-size:14px;font-weight:700;color:var(--ink);margin-bottom:.9rem;display:flex;align-items:center;gap:.4rem;padding-bottom:.6rem;border-bottom:2px solid var(--border2);}
+.metric-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.75rem;}
+.metric-def{background:#FFFFFF;border-radius:7px;padding:.75rem .9rem;border-left:4px solid var(--sap-hyperlink);box-shadow:0 1px 4px rgba(0,0,0,.07);}
+.metric-def.amber{border-left-color:var(--rag-amber);background:var(--rag-amber-bg);}
+.metric-def.red{border-left-color:var(--rag-red);background:var(--rag-red-bg);}
+.metric-def.green{border-left-color:var(--rag-green);background:var(--rag-green-bg);}
+.mdef-name{font-size:13px;font-weight:700;color:var(--ink);margin-bottom:.3rem;}
+.mdef-body{font-size:12px;color:var(--ink2);line-height:1.5;font-style:italic;}
+.mdef-scale{font-size:11px;color:var(--ink3);margin-top:.3rem;padding-top:.3rem;border-top:1px solid var(--border2);}
+footer{background:var(--sap-navy);color:rgba(255,255,255,.32);padding:.9rem 1.5rem;font-size:12px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.5rem;margin-top:1.5rem;}
+footer strong{color:rgba(255,255,255,.55);}
+@media(max-width:1100px){.krow{grid-template-columns:repeat(3,1fr);}.metric-grid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:800px){.g2,.g23{grid-template-columns:1fr;}.ins-grid{grid-template-columns:1fr;}.krow{grid-template-columns:repeat(2,1fr);}.hero-stats{gap:1rem;}.risk-grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<script>
+// ── SAP Fiori Chart Defaults ──
+Chart.defaults.font.family = '"72","72 Brand",system-ui,Arial,sans-serif';
+Chart.defaults.font.size = 12;
+Chart.defaults.color = '#6A6D70';
+Chart.defaults.plugins.legend.labels.usePointStyle = true;
+Chart.defaults.plugins.legend.labels.boxWidth = 8;
+Chart.defaults.plugins.legend.labels.padding = 14;
+Chart.defaults.plugins.tooltip.padding = 10;
+Chart.defaults.plugins.tooltip.titleFont = { size: 12, weight: '700' };
+Chart.defaults.plugins.tooltip.bodyFont  = { size: 12 };
+Chart.defaults.scale.grid.color = 'rgba(0,0,0,.05)';
+Chart.defaults.scale.ticks.maxRotation = 0;
+
+// ── SAP Brand & RAG Colors ──
+const RB='#0070F2', RG='#188918', RA='#C35500', RR='#D20A0A';
+const NAVY='#002A86', BLUE='#1B90FF', DEEPNAVY='#00144A';
+const C=['#5899DA','#E8743B','#19A979','#ED4A7B','#945ECF','#13A4B4','#F0AB00','#6C8893'];
+
+// ── RAG Utilities ──
+function ragCls(v){ return v>=97?'rb': v>=95?'rg': v>=90?'ra':'rr'; }
+function ragCol(v){ return v>=97?RB: v>=95?RG: v>=90?RA:RR; }
+function ragBg(v){  return v>=97?'#E8F3FF': v>=95?'#E6F4E6': v>=90?'#FFF2E6':'#FFEAEA'; }
+function ragLbl(v){ return v>=97?'Exceeds Target ≥97%': v>=95?'On Target 95–97%': v>=90?'Needs Attention 90–95%':'Below Target <90%'; }
+function ragBadge(v,txt){ return '<span class="kbadge '+ragCls(v)+'">'+(txt||ragLbl(v))+'</span>'; }
+function fmt(v,d=2){ return v==null?'—':v.toFixed(d)+'%'; }
+function fmtN(v){ return v==null?'—':v.toLocaleString(); }
+
+// ── Multi-Period Data Store ──
+const PD_STORE = {
+  jan:{ila:98.15,rev:65755,inv:2124484,escal:727,concurE:469,concurPct:64.51,mark:1214,revPct:3.10,label:'January 2026',c95:null,intILA:97.83,qualILA:97.83,isForecast:false},
+  feb:{ila:98.14,rev:73515,inv:2115218,escal:1141,concurE:540,concurPct:47.33,mark:1371,revPct:3.48,label:'February 2026',c95:null,intILA:97.83,qualILA:97.83,isForecast:false},
+  mar:{ila:98.14,rev:69417,inv:2200343,escal:945,concurE:500,concurPct:52.91,mark:1293,revPct:3.15,label:'March 2026',c95:null,intILA:98.04,qualILA:98.04,isForecast:false},
+  apr:{ila:97.83,rev:71439,inv:2103529,escal:645,concurE:483,concurPct:74.88,mark:1547,revPct:3.40,label:'April 2026',c95:null,intILA:98.02,qualILA:98.02,isForecast:false},
+  may:{ila:98.15,rev:92508,inv:2049142,escal:848,concurE:598,concurPct:70.52,mark:1715,revPct:4.51,label:'May 2026',c95:null,intILA:98.14,qualILA:98.14,isForecast:false},
+  jun:{ila:98.04,rev:36202,inv:2228053,escal:984,concurE:773,concurPct:78.56,mark:710,revPct:1.62,label:'June 2026',c95:null,intILA:98.14,qualILA:98.14,isForecast:false},
+  jul:{ila:97.67,rev:17884,inv:2232605,escal:802,concurE:564,concurPct:70.32,mark:413,revPct:0.79,label:'July 2026',c95:null,intILA:98.15,qualILA:98.15,isForecast:false},
+  aug:{ila:98.00,rev:47429,inv:2043105,escal:523,concurE:365,concurPct:69.79,mark:949,revPct:2.32,label:'August 2026',c95:null,intILA:98.28,qualILA:98.28,isForecast:false},
+  sep:{ila:98.27,rev:18464,inv:824966,escal:94,concurE:65,concurPct:69.15,mark:319,revPct:2.23,label:'September 2026',c95:90.23,t95:95.18,a95:89.47,clients:2171,intILA:98.07,qualILA:98.07,isForecast:false},
+  q1: {ila:98.14,rev:208687,inv:6440045,escal:2824,concurE:1517,concurPct:53.72,mark:3878,revPct:3.24,label:'Q1 2026 (Jan–Mar)',c95:88.50,t95:92.50,a95:86.50,clients:2334,intILA:97.90,qualILA:97.90,isForecast:false},
+  q2: {ila:98.01,rev:200149,inv:6380724,escal:2477,concurE:1854,concurPct:74.85,mark:3972,revPct:3.18,label:'Q2 2026 (Apr–Jun)',c95:88.80,t95:93.80,a95:87.90,clients:2200,intILA:98.10,qualILA:98.10,isForecast:false},
+  q3: {ila:97.98,rev:83777,inv:5100676,escal:1419,concurE:991,concurPct:69.84,mark:1680,revPct:1.78,label:'Q3 2026 (Jul–Sep)',c95:90.23,t95:95.18,a95:89.47,clients:2171,intILA:98.07,qualILA:98.07,isForecast:false},
+  ytd:{ila:98.04,rev:492941,inv:17921445,escal:6842,concurE:4446,concurPct:64.98,mark:9530,revPct:2.75,label:'YTD 2026 (Jan–Sep)',c95:90.23,t95:95.18,a95:89.47,clients:2171,intILA:98.07,qualILA:98.07,isForecast:false},
+  oct_f:{ila:98.15,rev:null,inv:null,escal:null,concurE:null,concurPct:null,mark:null,revPct:null,label:'October 2026 (Forecast)',isForecast:true},
+  nov_f:{ila:98.22,rev:null,inv:null,escal:null,concurE:null,concurPct:null,mark:null,revPct:null,label:'November 2026 (Forecast)',isForecast:true},
+  dec_f:{ila:98.28,rev:null,inv:null,escal:null,concurE:null,concurPct:null,mark:null,revPct:null,label:'December 2026 (Forecast)',isForecast:true},
+  q4f: {ila:98.21,rev:null,inv:null,escal:null,concurE:null,concurPct:null,mark:null,revPct:null,label:'Q4 2026 (Forecast)',isForecast:true}
+};
+
+const REGION_STORE = {
+  jan:{apac:97.93,emea:97.39,latam:99.46,na:98.24},
+  feb:{apac:98.33,emea:97.61,latam:98.84,na:98.17},
+  mar:{apac:99.26,emea:97.01,latam:97.56,na:98.14},
+  apr:{apac:98.84,emea:97.27,latam:96.55,na:97.78},
+  may:{apac:98.88,emea:97.78,latam:90.23,na:98.14},
+  jun:{apac:98.88,emea:97.90,latam:94.29,na:98.02},
+  jul:{apac:99.63,emea:98.18,latam:88.57,na:97.49},
+  aug:{apac:98.77,emea:98.42,latam:87.30,na:97.94},
+  sep:{apac:99.37,emea:97.90,latam:91.07,na:98.26},
+  q1: {apac:98.51,emea:97.34,latam:98.95,na:98.18},
+  q2: {apac:98.87,emea:97.65,latam:92.36,na:97.98},
+  q3: {apac:99.26,emea:98.17,latam:88.98,na:97.90},
+  ytd:{apac:98.88,emea:97.72,latam:93.76,na:98.02}
+};
+
+const SITE_STORE = {
+  sep:[
+    {code:'SGS',extILA:97.59,intILA:98.70,rev:32967,inv:2301053,esc:574,revPct:1.43},
+    {code:'WPL',extILA:97.04,intILA:98.31,rev:34951,inv:1666324,esc:542,revPct:2.10},
+    {code:'HCL',extILA:96.41,intILA:98.10,rev:13748,inv:928641,esc:390,revPct:1.48},
+    {code:'MNL',extILA:95.91,intILA:98.80,rev:915,inv:202855,esc:38,revPct:0.45},
+    {code:'TRC',extILA:99.87,intILA:100.00,rev:782,inv:27098,esc:1,revPct:2.89},
+    {code:'BLR',extILA:59.26,intILA:100.00,rev:15,inv:37779,esc:12,revPct:0.04,anomaly:true}
+  ],
+  q1:[
+    {code:'SGS',extILA:96.74,intILA:96.76,rev:93829,inv:3855581,esc:1726,revPct:2.43},
+    {code:'WPL',extILA:96.55,intILA:96.58,rev:98241,inv:4112547,esc:1544,revPct:2.39},
+    {code:'HCL',extILA:96.80,intILA:96.84,rev:35116,inv:890391,esc:488,revPct:3.94},
+    {code:'MNL',extILA:95.44,intILA:97.24,rev:6544,inv:714822,esc:281,revPct:0.92},
+    {code:'TRC',extILA:99.65,intILA:100.00,rev:3248,inv:88542,esc:12,revPct:3.67},
+    {code:'BLR',extILA:33.33,intILA:44.44,rev:2,inv:173,esc:16,revPct:1.16,anomaly:true}
+  ],
+  q2:[
+    {code:'SGS',extILA:97.02,intILA:97.88,rev:126440,inv:5984122,esc:1842,revPct:2.11},
+    {code:'WPL',extILA:96.54,intILA:97.71,rev:145210,inv:4512988,esc:1724,revPct:3.22},
+    {code:'HCL',extILA:96.01,intILA:97.52,rev:60881,inv:2587112,esc:1140,revPct:2.35},
+    {code:'MNL',extILA:96.08,intILA:98.41,rev:5214,inv:621447,esc:210,revPct:0.84},
+    {code:'TRC',extILA:99.74,intILA:100.00,rev:2841,inv:81244,esc:8,revPct:3.50},
+    {code:'BLR',extILA:71.44,intILA:100.00,rev:42,inv:112441,esc:35,revPct:0.04,anomaly:true}
+  ],
+  q3:[
+    {code:'SGS',extILA:97.48,intILA:98.56,rev:58201,inv:5998452,esc:1190,revPct:0.97},
+    {code:'WPL',extILA:96.89,intILA:98.14,rev:67221,inv:3987621,esc:1084,revPct:1.69},
+    {code:'HCL',extILA:96.28,intILA:97.96,rev:27341,inv:2301044,esc:842,revPct:1.19},
+    {code:'MNL',extILA:96.12,intILA:98.65,rev:2176,inv:523455,esc:85,revPct:0.42},
+    {code:'TRC',extILA:99.80,intILA:100.00,rev:1680,inv:67244,esc:4,revPct:2.50},
+    {code:'BLR',extILA:62.10,intILA:100.00,rev:22,inv:94502,esc:29,revPct:0.02,anomaly:true}
+  ],
+  ytd:[
+    {code:'SGS',extILA:97.21,intILA:97.98,rev:278470,inv:16140000,esc:4758,revPct:1.73},
+    {code:'WPL',extILA:96.76,intILA:97.78,rev:310672,inv:13680000,esc:4352,revPct:2.27},
+    {code:'HCL',extILA:96.41,intILA:97.87,rev:75291,inv:5206031,esc:2470,revPct:1.45},
+    {code:'MNL',extILA:95.76,intILA:98.29,rev:19476,inv:1860000,esc:576,revPct:1.05},
+    {code:'TRC',extILA:99.77,intILA:100.00,rev:7770,inv:244000,esc:25,revPct:3.18},
+    {code:'BLR',extILA:59.26,intILA:100.00,rev:63,inv:242000,esc:80,revPct:0.03,anomaly:true}
+  ]
+};
+['jan','feb','mar'].forEach(m=>SITE_STORE[m]=SITE_STORE.q1);
+['apr','may','jun'].forEach(m=>SITE_STORE[m]=SITE_STORE.q2);
+['jul','aug'].forEach(m=>SITE_STORE[m]=SITE_STORE.q3);
+['oct_f','nov_f','dec_f','q4f'].forEach(m=>SITE_STORE[m]=SITE_STORE.sep);
+
+const MONTHS    = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep'];
+const MONTHS_F  = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const MONTHS_LG = ['January','February','March','April','May','June','July','August','September'];
+const D_ILA     = [98.15,98.14,98.14,97.83,98.15,98.04,97.67,98.00,98.27];
+const D_ILA_ACT_F=[98.15,98.14,98.14,97.83,98.15,98.04,97.67,98.00,98.27,null,null,null];
+const D_ILA_FCAST=[null,null,null,null,null,null,null,null,98.27,98.15,98.22,98.28];
+const D_REV     = [65755,73515,69417,71439,92508,36202,17884,47429,18464];
+const D_INV     = [2124484,2115218,2200343,2103529,2049142,2228053,2232605,2043105,824966];
+const D_ESCAL   = [727,1141,945,645,848,984,802,523,94];
+const D_CONCUR  = [469,540,500,483,598,773,564,365,65];
+const D_CONCPCT = [64.51,47.33,52.91,74.88,70.52,78.56,70.32,69.79,69.15];
+const D_MARK    = [1214,1371,1293,1547,1715,710,412,949,319];
+const D_REVPCT  = [3.10,3.48,3.15,3.40,4.51,1.62,0.79,2.32,2.23];
+const D_ILA_R = {
+  apac:[97.93,98.33,99.26,98.84,98.88,98.88,99.63,98.77,99.37],
+  emea:[97.39,97.61,97.01,97.27,97.78,97.90,98.18,98.42,97.90],
+  latam:[99.46,98.84,97.56,96.55,90.23,94.29,88.57,87.30,91.07],
+  na:  [98.24,98.17,98.14,97.78,98.14,98.02,97.49,97.94,98.26]
+};
+const FCST_PERIODS=['oct_f','nov_f','dec_f','q4f'];
+const periodIdx={jan:0,feb:1,mar:2,apr:3,may:4,jun:5,jul:6,aug:7,sep:8};
+const qtrRange={q1:[0,1,2],q2:[3,4,5],q3:[6,7,8],ytd:[0,1,2,3,4,5,6,7,8]};
+const state={ period:'sep', region:'all', site:'all' };
+
+// Combined Accuracy data (pre-computed)
+const D_CA = [97.47,97.44,97.45,97.18,97.52,96.01,94.77,97.26,97.95];
+
+// ── Resolve period data ──
+function getPDS(){
+  const p=state.period, r=state.region;
+  const base=PD_STORE[p]||PD_STORE.sep;
+  if(r!=='all'&&REGION_STORE[p]&&REGION_STORE[p][r]){
+    const rila=REGION_STORE[p][r];
+    return {...base, ila:rila, label:base.label+' · '+r.toUpperCase()};
+  }
+  return base;
+}
+
+function getPD(){
+  const p=state.period, r=state.region;
+  if(FCST_PERIODS.includes(p)){
+    const f=PD_STORE[p];
+    return {...f, isForecast:true};
+  }
+  let idxs;
+  if(p in periodIdx) idxs=[periodIdx[p]];
+  else if(p in qtrRange) idxs=qtrRange[p];
+  else idxs=qtrRange.ytd;
+  let ilaArr=r==='all'?D_ILA:(D_ILA_R[r]||D_ILA);
+  const ilaVals=idxs.map(i=>ilaArr[i]).filter(x=>x!=null);
+  const ila=ilaVals.reduce((a,b)=>a+b,0)/ilaVals.length;
+  const prevIla=idxs[0]>0?(r==='all'?D_ILA:ilaArr)[idxs[0]-1]:null;
+  const momDelta=prevIla!=null?(ila-prevIla).toFixed(2):null;
+  const rev=idxs.reduce((a,i)=>a+(D_REV[i]||0),0);
+  const inv=idxs.reduce((a,i)=>a+(D_INV[i]||0),0);
+  const escal=idxs.reduce((a,i)=>a+(D_ESCAL[i]||0),0);
+  const concurE=idxs.reduce((a,i)=>a+(D_CONCUR[i]||0),0);
+  const concurPct=escal>0?(concurE/escal*100):0;
+  const mark=idxs.reduce((a,i)=>a+(D_MARK[i]||0),0);
+  const revPct=idxs.map(i=>D_REVPCT[i]).reduce((a,b)=>a+b,0)/idxs.length;
+  let label;
+  if(idxs.length===1) label=MONTHS_LG[idxs[0]]+' 2026';
+  else if(p==='q1') label='Q1 2026 (Jan–Mar)';
+  else if(p==='q2') label='Q2 2026 (Apr–Jun)';
+  else if(p==='q3') label='Q3 2026 (Jul–Sep)';
+  else label='YTD 2026 (Jan–Sep)';
+  const cfBase=(rev+escal);
+  const cfIla=cfBase>0?((cfBase-(mark+concurE))/cfBase*100):ila;
+  return{ila,prevIla,momDelta,rev,inv,escal,concurE,concurPct,mark,revPct,label,idxs,isForecast:false,cfIla};
+}
+
+// ── Chart Registry ──
+const CH={};
+function mkChart(id,cfg){
+  const el=document.getElementById(id);if(!el)return;
+  if(CH[id])CH[id].destroy();
+  CH[id]=new Chart(el,cfg);
+  return CH[id];
+}
+function updChart(id,datasets,labels){
+  const c=CH[id];if(!c)return;
+  if(labels)c.data.labels=labels;
+  datasets.forEach((ds,i)=>{if(c.data.datasets[i])Object.assign(c.data.datasets[i],ds);});
+  c.update('none');
+}
+
+// Common scale helpers
+const scaleYpct=(min,max,lbl)=>({type:'linear',min,max,title:{display:true,text:lbl,font:{size:12}},ticks:{font:{size:12},callback:v=>v.toFixed(1)+'%'},grid:{color:'rgba(0,0,0,.04)'}});
+const scaleYcount=(lbl)=>({type:'linear',title:{display:true,text:lbl,font:{size:12}},ticks:{font:{size:12},callback:v=>v>=1000?(v/1000).toFixed(0)+'k':v},grid:{drawOnChartArea:false}});
+const legendTop={position:'top',labels:{font:{size:12},padding:12}};
+function annLine(yMin,col,lbl){
+  return{type:'line',yMin,yMax:yMin,borderColor:col,borderWidth:1.5,borderDash:[5,3],
+    label:{content:lbl,display:true,position:'end',font:{size:10},color:col,backgroundColor:'transparent',padding:2}};
+}
+
+// ── Build Charts ──
+function buildCharts(){
+  const pd=getPD();
+  const idxs=pd.idxs||[8];
+
+  // Quarterly Benchmark
+  const qVals=[
+    D_ILA.slice(0,3).reduce((a,b)=>a+b,0)/3,
+    D_ILA.slice(3,6).reduce((a,b)=>a+b,0)/3,
+    D_ILA.slice(6,9).reduce((a,b)=>a+b,0)/3
+  ];
+  mkChart('c-qtr',{type:'bar',
+    data:{labels:['Q1 2026','Q2 2026','Q3 2026'],
+      datasets:[{label:'Avg Quality ILA %',data:qVals.map(v=>parseFloat(v.toFixed(2))),
+        backgroundColor:qVals.map(v=>ragBg(v)),borderColor:qVals.map(v=>ragCol(v)),
+        borderWidth:2,borderRadius:4}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},
+        annotation:{annotations:{t95:annLine(95,RA,'95% Target'),t97:annLine(97,RB,'97% Blue')}}},
+      scales:{x:{ticks:{font:{size:12}}},y:{...scaleYpct(97,98.5,'Avg ILA %')}}}});
+
+  // Full-Year Forecast
+  mkChart('c-forecast',{type:'line',
+    data:{labels:MONTHS_F,datasets:[
+      {label:'Actual ILA',data:D_ILA_ACT_F,borderColor:RB,backgroundColor:'transparent',
+       borderWidth:2.5,pointRadius:4,pointBackgroundColor:D_ILA.map(v=>ragCol(v)).concat([null,null,null]),tension:.3},
+      {label:'Forecast ILA',data:D_ILA_FCAST,borderColor:'#5D36FF',backgroundColor:'transparent',
+       borderWidth:2.5,borderDash:[6,4],pointRadius:4,pointBackgroundColor:'#5D36FF',tension:.3}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:legendTop,
+        annotation:{annotations:{t97:annLine(97,RB,'97%'),t95:annLine(95,RA,'95%')}}},
+      scales:{x:{ticks:{font:{size:12}}},y:{...scaleYpct(97,99,'ILA %')}}}});
+
+  // Combined Accuracy Monthly
+  mkChart('c-cf-monthly',{type:'bar',
+    data:{labels:MONTHS,datasets:[
+      {type:'line',label:'Quality ILA %',data:D_ILA,borderColor:RB,backgroundColor:'transparent',
+       borderWidth:2,pointRadius:4,pointBackgroundColor:D_ILA.map(v=>ragCol(v)),tension:.3,yAxisID:'y'},
+      {type:'bar',label:'Combined Accuracy %',data:D_CA,
+       backgroundColor:D_CA.map(v=>ragBg(v)),borderColor:D_CA.map(v=>ragCol(v)),
+       borderWidth:1.5,borderRadius:4,yAxisID:'y'}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:legendTop,
+        annotation:{annotations:{t95:annLine(95,RA,'95% SLA')}}},
+      scales:{x:{grid:{display:false}},y:{min:93,max:99.5,ticks:{callback:v=>v.toFixed(1)+'%'},grid:{color:'rgba(0,0,0,.05)'}}}}});
+
+  // Regional Comparison
+  buildRegionalChart();
+}
+
+function buildRegionalChart(){
+  const p=state.period;
+  const reg=REGION_STORE[p]||REGION_STORE.sep;
+  const vals=[reg.apac||99,reg.emea||98,reg.latam||91,reg.na||98];
+  mkChart('c-regional',{type:'bar',
+    data:{labels:['APAC','EMEA','LATAM','North America'],
+      datasets:[{label:'ILA %',data:vals,
+        backgroundColor:vals.map(v=>ragBg(v)),borderColor:vals.map(v=>ragCol(v)),
+        borderWidth:2,borderRadius:4}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},
+        annotation:{annotations:{t97:annLine(97,RB,'97%'),t95:annLine(95,RA,'95%')}}},
+      scales:{x:{ticks:{font:{size:12}}},y:{...scaleYpct(85,100,'ILA %')}}}});
+}
+
+// ── Site Scorecard ──
+function buildSiteScorecard(period){
+  const el=document.getElementById('site-scorecard');if(!el)return;
+  const sites=(SITE_STORE[period]||SITE_STORE.sep);
+  const filtered=state.site==='all'?sites:sites.filter(s=>s.code.toLowerCase()===state.site);
+  el.innerHTML='';
+  filtered.forEach(s=>{
+    const cls=ragCls(s.extILA), col=ragCol(s.extILA);
+    const row=document.createElement('div');
+    row.className='srow';
+    row.innerHTML=
+      '<span class="sc-code">'+s.code+'</span>'+
+      '<span class="sc-name" title="'+s.code+(s.anomaly?' *Anomaly':'')+'">'+s.code+(s.anomaly?' *':'')+'</span>'+
+      '<div class="sc-track"><div class="sc-fill" style="width:'+Math.max(s.extILA,5)+'%;background:'+col+';"></div></div>'+
+      '<span class="sc-pct" style="color:'+col+'">'+s.extILA.toFixed(2)+'%</span>'+
+      '<span class="sc-badge '+cls+'">'+ragLbl(s.extILA).split(' ')[0]+'</span>';
+    el.appendChild(row);
+  });
+}
+
+// ── Smart Insights Narrative ──
+function genNarrative(pd){
+  const ins=[];
+  const ila=pd.ila, isFc=pd.isForecast;
+
+  // Insight 1: ILA Status
+  ins.push({
+    cls: ila>=97?'pos':ila>=95?'info':ila>=90?'warn':'crit',
+    tag: ila>=97?'Exceeds Target':ila>=95?'On Target':ila>=90?'Needs Attention':'Below Target',
+    t:   'Quality ILA: '+fmt(ila),
+    b:   'Quality ILA at <strong>'+fmt(ila)+'</strong> — '+ragLbl(ila)+'. Service target: ≥95.00%. '+
+         (pd.momDelta!=null?('Prior period variance: '+(parseFloat(pd.momDelta)>=0?'+':'')+pd.momDelta+'pp.'):'')
+  });
+
+  // Insight 2: Combined Accuracy / Escalations
+  if(!isFc && pd.escal!=null){
+    const concHigh=pd.concurPct>65;
+    ins.push({
+      cls: concHigh?'crit':'warn',
+      tag: concHigh?'Elevated':'Acceptable',
+      t:   'SAP Concur Error Rate: '+fmt(pd.concurPct,1),
+      b:   '<strong>'+fmtN(pd.concurE)+'</strong> of <strong>'+fmtN(pd.escal)+'</strong> escalations tagged SAP Concur Error ('+fmt(pd.concurPct,1)+'). '+
+           (concHigh?'Elevated — Operations Team root cause analysis recommended.':'Within acceptable range.')
+    });
+  } else if(isFc){
+    ins.push({
+      cls:'info', tag:'Projection',
+      t:  'Forecast Period — '+pd.label,
+      b:  'AI projection: <strong>'+fmt(pd.ila)+'</strong> ILA. 90% CI: '+fmt(pd.ila-0.5)+'–'+fmt(pd.ila+0.43)+'. Based on Jan–Sep 2026 trajectory.'
+    });
+  }
+
+  // Insight 3: Review Coverage
+  if(!isFc && pd.revPct!=null){
+    const covGood=pd.revPct>=3, covOk=pd.revPct>=1;
+    ins.push({
+      cls: covGood?'pos':covOk?'warn':'crit',
+      tag: covGood?'On Target':covOk?'Below Target':'Critical',
+      t:   'Review Coverage: '+pd.revPct.toFixed(2)+'%',
+      b:   '<strong>'+fmtN(pd.rev)+'</strong> reviews on <strong>'+(pd.inv?(pd.inv/1e6).toFixed(2)+'M':'—')+'</strong> invoices. '+
+           (covGood?'Coverage meets 3% policy target.':covOk?'Coverage below 3% policy target. Gap: '+(3-pd.revPct).toFixed(2)+'pp.':'Coverage critically low — investigate capacity.')
+    });
+  }
+
+  // Insight 4: Regional Alert
+  const reg=REGION_STORE[state.period]||REGION_STORE.sep;
+  if(reg && state.region==='all' && !isFc){
+    const minReg=Object.entries(reg).sort((a,b)=>a[1]-b[1])[0];
+    const regNames={apac:'APAC',emea:'EMEA',latam:'LATAM',na:'North America'};
+    ins.push({
+      cls: minReg[1]>=97?'pos':minReg[1]>=95?'info':minReg[1]>=90?'warn':'crit',
+      tag: 'Regional',
+      t:   'Lowest Region: '+regNames[minReg[0]]+' at '+fmt(minReg[1]),
+      b:   regNames[minReg[0]]+' at <strong>'+fmt(minReg[1])+'</strong> — '+ragLbl(minReg[1])+'. '+
+           (minReg[1]<95?'Proactive QBR scheduling recommended for accounts in at-risk band.':'Regional performance within acceptable range.')
+    });
+  } else if(state.region!=='all' && !isFc){
+    ins.push({
+      cls:'info', tag:'Region Filter',
+      t:  'Region: '+state.region.toUpperCase()+' — '+fmt(ila),
+      b:  'Showing data scoped to <strong>'+state.region.toUpperCase()+'</strong>. ILA: <strong>'+fmt(ila)+'</strong> — '+ragLbl(ila)+'.'
+    });
+  }
+
+  // Insight 5: C95 Client Portfolio
+  const pdFull=PD_STORE[state.period]||PD_STORE.sep;
+  if(!isFc && pdFull.c95!=null){
+    const below=pdFull.clients?Math.round(pdFull.clients*(1-pdFull.c95/100)):null;
+    ins.push({
+      cls: pdFull.c95>=90?'pos':pdFull.c95>=85?'info':'warn',
+      tag: 'Client Portfolio',
+      t:   'Clients ≥95% ILA: '+fmt(pdFull.c95,1),
+      b:   '<strong>'+fmtN(Math.round((pdFull.c95/100)*(pdFull.clients||2171)))+'</strong> of <strong>'+fmtN(pdFull.clients||2171)+'</strong> clients meet the ≥95% ILA threshold.'+
+           (below?' <strong>'+fmtN(below)+'</strong> clients below SLA — proactive QBR recommended.':'')
+    });
+  }
+
+  // Insight 6: YTD Forecast
+  ins.push({
+    cls:'info', tag:'Outlook',
+    t:  'Q4 2026 Outlook — Stable',
+    b:  'YTD ILA at <strong>98.04%</strong> heading into Q4. Statistical forecast: <strong>98.21%</strong> (range: 97.70–98.65%). Seasonal volume increase Oct–Nov may create temporary pressure.'
+  });
+
+  return ins.slice(0,6);
+}
+
+function renderInsights(pd){
+  const grid=document.getElementById('exec-ins-grid');if(!grid)return;
+  const ins=genNarrative(pd);
+  // Determine grid columns: use 3-col for 6 insights (2 rows of 3)
+  grid.style.gridTemplateColumns='repeat(3,1fr)';
+  grid.innerHTML=ins.map(i=>
+    '<div class="ins '+i.cls+'">'+
+      '<div class="ins-t">'+
+        (i.tag?'<span class="ins-tag">'+i.tag+'</span> ':'')+
+        i.t+
+      '</div>'+
+      '<div class="ins-b">'+i.b+'</div>'+
+    '</div>'
+  ).join('');
+}
+
+// ── UI Helpers ──
+function setEl(id,html){const e=document.getElementById(id);if(e)e.innerHTML=html;}
+function setTxt(id,t){const e=document.getElementById(id);if(e)e.textContent=t;}
+
+// ── Main Update ──
+function update(){
+  const pd=getPD();
+  const pds=getPDS();
+
+  // Hero
+  setTxt('exec-eye','Executive Summary · '+pds.label+(pds.isForecast?' — Forecast':''));
+  setTxt('exec-h',fmt(pds.ila)+' Invoice Level Accuracy'+(pds.isForecast?' (Projected)':''));
+  setEl('e-vol',pds.isForecast?'—':fmtN(pd.rev));
+  setEl('e-inv',pds.isForecast?'—':(pd.inv?(pd.inv/1e6).toFixed(2)+'M':'—'));
+  setEl('e-esc',pds.isForecast?'—':fmtN(pd.escal));
+  if(pd.momDelta!=null){
+    const d=parseFloat(pd.momDelta);
+    setEl('e-trend',(d>=0?'+':'')+d.toFixed(2)+'pp');
+  } else { setEl('e-trend','—'); }
+  const ragBadgeEl=document.getElementById('exec-rag-badge');
+  if(ragBadgeEl){
+    ragBadgeEl.querySelector('.hrd').style.background=ragCol(pds.ila);
+    setTxt('exec-rag-lbl',ragLbl(pds.ila)+(pds.isForecast?' — Forecast':''));
+  }
+
+  // Combined Accuracy for hero
+  const cfIla=pd.cfIla||pds.ila;
+  setEl('exec-cf',fmt(cfIla));
+
+  // KPI 1
+  setEl('kv-e1','<span class="'+ragCls(pds.ila)+'">'+fmt(pds.ila)+'</span>');
+  setEl('kb-e1',ragBadge(pds.ila));
+  document.getElementById('kc-e1').className='kc '+ragCls(pds.ila);
+  if(pd.momDelta!=null){
+    const d=parseFloat(pd.momDelta);
+    const kd=document.getElementById('kd-e1');
+    if(kd){kd.textContent=(d>=0?'+':'')+d.toFixed(2)+'pp vs prev period';kd.className='kdelta '+(d>=0?'up':'dn');}
+  }
+
+  // KPI 2: Combined Accuracy
+  setEl('kv-e2','<span class="'+ragCls(cfIla)+'">'+fmt(cfIla)+'</span>');
+  setEl('kb-e2',ragBadge(cfIla));
+  document.getElementById('kc-e2').className='kc '+ragCls(cfIla);
+
+  // KPI 3: Escalations
+  setEl('kv-e3',pds.isForecast?'—':fmtN(pd.escal));
+  if(!pds.isForecast && pd.concurE!=null){
+    setEl('ks-e3','SAP Concur Error: '+fmtN(pd.concurE)+' ('+fmt(pd.concurPct,1)+')');
+  }
+
+  // KPI 4: C95
+  const pdsF=PD_STORE[state.period]||PD_STORE.sep;
+  if(pdsF.c95!=null){
+    setEl('kv-e4',fmt(pdsF.c95,1));
+    const kc4=document.getElementById('kc-e4');
+    if(kc4) kc4.className='kc '+(pdsF.c95>=90?'rb':pdsF.c95>=85?'rg':'ra');
+  }
+
+  // KPI 5: Review Coverage
+  if(!pds.isForecast && pd.revPct!=null){
+    setEl('kv-e5',pd.revPct.toFixed(2)+'%');
+    const kc5=document.getElementById('kc-e5');
+    if(kc5) kc5.className='kc '+(pd.revPct>=3?'rg':pd.revPct>=1?'ra':'rr');
+    setEl('kb-e5',ragBadge(pd.revPct*33.3,(pd.revPct>=3?'On Target':pd.revPct>=1?'Below Target':'Critical')));
+  } else {
+    setEl('kv-e5','—');
+  }
+
+  // Insights
+  setTxt('exec-ins-period',pds.label);
+  renderInsights(pd);
+
+  // Period labels
+  setTxt('regional-period-lbl',pds.label);
+  setTxt('site-period-lbl',pds.label+' — Invoice Level Accuracy by Site');
+  setTxt('scorecard-period',pds.label);
+  setTxt('rec-period',pds.label);
+
+  // Regional chart
+  buildRegionalChart();
+
+  // Site scorecard
+  buildSiteScorecard(state.period);
+
+  // Site filter label
+  const siteLabel=state.site==='all'?'All Sites':state.site.toUpperCase();
+  setTxt('site-filter-lbl',siteLabel);
+
+  // Forecast note
+  document.getElementById('fcast-note').classList.toggle('show',FCST_PERIODS.includes(state.period));
+
+  // Filter info
+  const rLabel=state.region==='all'?'All Regions':{na:'North America',emea:'EMEA',apac:'APAC',latam:'LATAM'}[state.region]||state.region;
+  setTxt('filterInfo',rLabel+' · '+siteLabel+(pds.isForecast?' · Forecast':''));
+
+  // Forecast banner
+  const fcBanner=document.getElementById('fc-banner');
+  if(fcBanner && FCST_PERIODS.includes(state.period)){
+    setTxt('fc-val',fmt(pds.ila));
+  }
+}
+
+// ── Filter Handlers ──
+function setPeriod(p){
+  state.period=p;
+  applyFilters();
+}
+
+function applyFilters(){
+  state.region=document.getElementById('regionFilter').value;
+  state.site  =document.getElementById('siteFilter').value;
+  update();
+}
+
+// ── Metric Panel Toggle ──
+function toggleMetricPanel(){
+  const panel=document.getElementById('metric-panel');
+  const btn=document.getElementById('metric-btn');
+  if(!panel||!btn)return;
+  const isShowing=panel.classList.toggle('show');
+  btn.setAttribute('aria-expanded',isShowing);
+  btn.innerHTML=isShowing?'✖ Hide Definitions':'ℹ Metric Definitions';
+}
+
+// ══════════════════════════════════════════════════════════════
+
+
+function aggregateQualityRows(rows, periodKey) {
+  if (!rows || !rows.length) return null;
+
+  // Month filter map
+  var monthMap = {jan:1,feb:2,mar:3,apr:4,may:5,jun:6,jul:7,aug:8,sep:9};
+  var qtrMap   = {q1:[1,2,3], q2:[4,5,6], q3:[7,8,9]};
+
+  function monthOf(dateStr) {
+    if (!dateStr) return 0;
+    return new Date(dateStr).getMonth() + 1; // 1-indexed
+  }
+
+  var filtered = rows.filter(function(r) {
+    var mo = monthOf(r.DATE_REVIEWED || r.REVIEW_DATE);
+    if (periodKey in monthMap) return mo === monthMap[periodKey];
+    if (periodKey in qtrMap)   return qtrMap[periodKey].indexOf(mo) !== -1;
+    return true; // ytd = all rows
+  });
+
+  // Apply site filter
+  if (state.site !== 'all') {
+    // Direct match — no aliases; LOCATION values are used as-is
+    var locFilter = state.site.toUpperCase();
+    filtered = filtered.filter(function(r){
+      return (r.LOCATION || '').toUpperCase() === locFilter.toUpperCase();
+    });
+  }
+
+  if (!filtered.length) return null;
+
+  var totalILR = filtered.reduce(function(a,r){ return a + (parseFloat(r.INVOICE_LEVEL_RATING)||0); }, 0);
+  var totalCnt = filtered.reduce(function(a,r){ return a + (parseFloat(r.COUNT)||0); }, 0);
+  var ila = totalCnt > 0 ? (totalILR / totalCnt * 100) : null;
+
+  return { ila: ila, reviews: totalCnt, rows: filtered };
+}
+
+/**
+ * Aggregate escalation rows for a given period key.
+ */
+function aggregateEscalRows(rows, periodKey) {
+  if (!rows || !rows.length) return null;
+  var monthMap = {jan:1,feb:2,mar:3,apr:4,may:5,jun:6,jul:7,aug:8,sep:9};
+  var qtrMap   = {q1:[1,2,3], q2:[4,5,6], q3:[7,8,9]};
+  function monthOf(d){ return new Date(d).getMonth()+1; }
+
+  var filtered = rows.filter(function(r){
+    var mo = monthOf(r.DATE_REVIEWED);
+    if (periodKey in monthMap) return mo === monthMap[periodKey];
+    if (periodKey in qtrMap)   return qtrMap[periodKey].indexOf(mo) !== -1;
+    return true;
+  });
+
+  if (state.site !== 'all') {
+    var locFilter = state.site.toUpperCase();
+    filtered = filtered.filter(function(r){
+      return (r.LOCATION||'').toUpperCase() === locFilter.toUpperCase();
+    });
+  }
+
+  if (!filtered.length) return null;
+
+  var totalEscal   = filtered.reduce(function(a,r){ return a + (parseFloat(r.ESCALATION_COUNT)||0); }, 0);
+  var totalConcur  = filtered.reduce(function(a,r){ return a + (parseFloat(r.IF_SCORE_SHOULD_CHANGE_1_0)||0); }, 0);
+  var concurPct    = totalEscal > 0 ? (totalConcur / totalEscal * 100) : 0;
+
+  return { escal: totalEscal, concurE: totalConcur, concurPct: concurPct };
+}
+
+
+function buildCombinedAccuracyChart() {
+  const ctx=document.getElementById('c-cf-monthly');if(!ctx)return;
+  new Chart(ctx,{
+    type:'bar',
+    data:{labels:MONTHS,datasets:[
+      {type:'line',label:'Quality ILA %',data:D_ILA,borderColor:RB,backgroundColor:'transparent',
+       borderWidth:2,pointRadius:4,pointBackgroundColor:D_ILA.map(v=>ragCol(v)),tension:.3,yAxisID:'y'},
+      {type:'bar',label:'Combined Accuracy %',data:D_CA,
+       backgroundColor:D_CA.map(v=>ragBg(v)),borderColor:D_CA.map(v=>ragCol(v)),
+       borderWidth:1.5,borderRadius:4,yAxisID:'y'}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:legendTop,annotation:{annotations:{t95:annLine(95,RA,'95% SLA')}}},
+      scales:{x:{grid:{display:false}},y:{min:93,max:99.5,ticks:{callback:v=>v.toFixed(1)+'%'},grid:{color:'rgba(0,0,0,.05)'}}}}
+  });
+  CH['c-cf-monthly']=null; // prevent auto-rebuild
+})();
+}
+
+
+
+// ══════════════════════════════════════════════════════════════
+// SAC CUSTOM WIDGET DATA BRIDGE
+// Works with SAC Stories Custom Widget API (no Analytics Designer needed).
+// Falls back gracefully to hardcoded sample data when not in SAC.
+// ══════════════════════════════════════════════════════════════
+
+// monthOf helper — shared scope (used in aggregateQualityRows, aggregateEscalRows, applyCWLiveData)
+function monthOf(dateStr) {
+  if (!dateStr) return 0;
+  return new Date(dateStr).getMonth() + 1; // 1-indexed
+}
+
+/**
+ * Parse a Custom Widget data binding into flat row objects.
+ * Handles both array-of-arrays (with rawValue cells) and array-of-objects.
+ * dimKeys + measKeys define the expected column names IN ORDER.
+ */
+function parseCWBinding(widget, bindingId, dimKeys, measKeys) {
+  try {
+    if (!widget || !widget.dataBindings) return null;
+    var binding = widget.dataBindings.getDataBinding(bindingId);
+    if (!binding) return null;
+    var result = binding.data;
+    if (!result) return null;
+
+    // Determine column order from metadata (most reliable)
+    var columns = [];
+    var meta = result.metadata || result.feeds;
+    if (meta && meta.feeds) {
+      meta.feeds.forEach(function(feed) {
+        if (feed.values) {
+          feed.values.forEach(function(v) {
+            columns.push(v.key || v.id || v.name || String(v));
+          });
+        }
+      });
+    }
+    // Fallback: use provided keys in order
+    if (!columns.length) columns = dimKeys.concat(measKeys);
+
+    var rows = result.data || result;
+    if (!Array.isArray(rows)) return null;
+    if (!rows.length) return [];
+
+    // Debug: log raw format once
+    console.info('[CW Bridge] ' + bindingId + ' — ' + rows.length + ' rows, cols:', columns);
+
+    return rows.map(function(row) {
+      var obj = {};
+      if (Array.isArray(row)) {
+        columns.forEach(function(col, i) {
+          var cell = row[i];
+          obj[col] = (cell !== null && cell !== undefined &&
+                      typeof cell === 'object' && 'rawValue' in cell)
+            ? cell.rawValue : cell;
+        });
+      } else if (row && typeof row === 'object') {
+        Object.keys(row).forEach(function(k) {
+          var cell = row[k];
+          obj[k] = (cell !== null && cell !== undefined &&
+                    typeof cell === 'object' && 'rawValue' in cell)
+            ? cell.rawValue : cell;
+        });
+      }
+      return obj;
+    });
+  } catch(e) {
+    console.error('[CW Bridge] parseCWBinding failed for', bindingId, ':', e);
+    return null;
+  }
+}
+
+/**
+ * Main Custom Widget data applier.
+ * Replaces applySACLiveData() — works with Custom Widget API instead of Script API.
+ */
+function applyCWLiveData(widget) {
+  try {
+    var qualRows    = parseCWBinding(widget, 'qualityData',
+                        ['DATE_REVIEWED','LOCATION'], ['INVOICE_LEVEL_RATING','COUNT']);
+    var escalRows   = parseCWBinding(widget, 'escalationData',
+                        ['DATE_REVIEWED','LOCATION'], ['ESCALATION_COUNT','IF_SCORE_SHOULD_CHANGE_1_0']);
+    var summaryRows = parseCWBinding(widget, 'summaryData',
+                        ['REVIEW_DATE','LOCATION'], ['QS_REVIEW_COUNT','EDW_INVOICE_COUNT','REVIEW_RATE']);
+
+    if (!qualRows && !escalRows && !summaryRows) {
+      console.warn('[CW Bridge] No data received yet — retaining sample data.');
+      return;
+    }
+
+    // Overlay live data into PD_STORE for each period
+    var periods = ['jan','feb','mar','apr','may','jun','jul','aug','sep','q1','q2','q3','ytd'];
+    periods.forEach(function(p) {
+      var qd = aggregateQualityRows(qualRows, p);
+      var ed = aggregateEscalRows(escalRows, p);
+      if (qd && qd.ila != null) {
+        PD_STORE[p].ila = qd.ila;
+        PD_STORE[p].rev = qd.reviews;
+      }
+      if (ed) {
+        PD_STORE[p].escal     = ed.escal;
+        PD_STORE[p].concurE   = ed.concurE;
+        PD_STORE[p].concurPct = ed.concurPct;
+      }
+    });
+
+    // Override REVIEW_RATE from AM_IC_COMBINED_SUMMARY
+    if (summaryRows && summaryRows.length) {
+      var totalReviews = summaryRows.reduce(function(a,r){ return a+(parseFloat(r.QS_REVIEW_COUNT)||0); }, 0);
+      var totalInv     = summaryRows.reduce(function(a,r){ return a+(parseFloat(r.EDW_INVOICE_COUNT)||0); }, 0);
+      var sepRows      = summaryRows.filter(function(r){ return monthOf(r.REVIEW_DATE)===9; });
+      if (sepRows.length) {
+        var sr = sepRows.reduce(function(a,r){ return a+(parseFloat(r.REVIEW_RATE)||0); }, 0) / sepRows.length;
+        PD_STORE.sep.revPct = sr * 100;
+      }
+      PD_STORE.ytd.rev = totalReviews;
+      PD_STORE.ytd.inv = totalInv;
+    }
+
+    // Update D_ILA monthly array from live quality rows
+    if (qualRows) {
+      ['jan','feb','mar','apr','may','jun','jul','aug','sep'].forEach(function(pKey, i) {
+        var qd = aggregateQualityRows(qualRows, pKey);
+        if (qd && qd.ila != null) D_ILA[i] = parseFloat(qd.ila.toFixed(2));
+      });
+    }
+
+    console.info('[CW Bridge] Live data applied successfully.');
+    buildCharts();
+    buildCombinedAccuracyChart();
+    update();
+
+  } catch(e) {
+    console.error('[CW Bridge] applyCWLiveData error:', e);
+    // Keep sample data — dashboard still works
+  }
+}
+
+
+
+// ── Dashboard HTML template ──────────────────────────────────────────────────
+const WIDGET_TMPL = `<!-- SHELL BAR -->
+<nav class="shell" role="banner">
+  <div class="sap-sq">SAP</div>
+  <span class="shell-pipe">|</span>
+  <span class="shell-app">SAP Analytics Cloud</span>
+  <span class="shell-sub">&middot; Quality Intelligence</span>
+  <div class="shell-sp"></div>
+  <div class="live-chip"><span class="live-dot"></span>Live</div>
+  <span class="shell-date" id="shellDate">October 02, 2026</span>
+  <div class="avatar" title="Quality, Training &amp; Process Optimization">QT</div>
+</nav>
+
+<!-- TITLE BAR -->
+<header class="titlebar">
+  <div class="tb-left">
+    <h1>Global Invoice Capture Quality Dashboard</h1>
+    <div class="tb-sub">Value Intelligence Team &middot; Quality, Training &amp; Process Optimization &middot; SAP Concur MBS</div>
+  </div>
+  <div class="tb-right">
+    <div class="tb-view-badge"><span class="tb-view-dot"></span>Executive View</div>
+    <div class="data-stamp" id="dataStamp">Data as of: Monday, September 14, 2026</div>
+  </div>
+</header>
+
+<!-- RAG LEGEND BAR -->
+<div class="ragbar" role="region" aria-label="RAG status scale">
+  <span class="rag-lbl">Status Scale:</span>
+  <div class="rag-scale">
+    <span class="rag-pill rp-b"><span class="rag-dot" style="background:var(--rag-blue)"></span>Blue &mdash; Exceeds Target (&ge;97%)</span>
+    <span class="rag-pill rp-g"><span class="rag-dot" style="background:var(--rag-green)"></span>Green &mdash; On Target (95&ndash;96.99%)</span>
+    <span class="rag-pill rp-a"><span class="rag-dot" style="background:var(--rag-amber)"></span>Amber &mdash; Needs Attention (90&ndash;94.99%)</span>
+    <span class="rag-pill rp-r"><span class="rag-dot" style="background:var(--rag-red)"></span>Red &mdash; Below Target (&lt;90%)</span>
+  </div>
+  <span class="rag-sp"></span>
+  <span style="font-size:11px;color:var(--ink3);font-style:italic;">SAP Internal</span>
+</div>
+
+<!-- DATA QUALITY BAR -->
+<div class="dq-bar" role="region" aria-label="Data quality indicators">
+  <div class="dq-item"><span class="dq-lbl">Data as-of:</span> Sep 14, 2026</div>
+  <span class="dq-div">|</span>
+  <div class="dq-item"><span class="dq-lbl">Period:</span> Sep 2026 <span class="dq-badge partial">Partial Month (Sep 1&ndash;14)</span></div>
+  <span class="dq-div">|</span>
+  <div class="dq-item" id="dq-completeness"><span class="dq-lbl">Completeness:</span> ~52% of Sep <span class="dq-badge partial">Partial</span></div>
+  <span class="dq-div">|</span>
+  <div class="dq-item"><span class="dq-lbl">Source:</span> MoM PDF + Internal Review PDF + RTR PDF</div>
+  <span class="dq-div">|</span>
+  <div class="dq-item"><span class="dq-lbl">Scope:</span> All sites &middot; All regions</div>
+</div>
+
+<!-- FILTER BAR -->
+<div class="fbar" role="toolbar" aria-label="Dashboard filters">
+  <span class="sl">Period</span>
+  <select class="fsel" id="periodSelect" onchange="setPeriod(this.value)" aria-label="Filter by period" style="min-width:180px;">
+    <option value="jan">January 2026</option>
+    <option value="feb">February 2026</option>
+    <option value="mar">March 2026</option>
+    <option value="apr">April 2026</option>
+    <option value="may">May 2026</option>
+    <option value="jun">June 2026</option>
+    <option value="jul">July 2026</option>
+    <option value="aug">August 2026</option>
+    <option value="sep" selected>September 2026 &mdash; Latest</option>
+    <optgroup label="Forecast">
+      <option value="oct_f">October 2026 (Forecast)</option>
+      <option value="nov_f">November 2026 (Forecast)</option>
+      <option value="dec_f">December 2026 (Forecast)</option>
+    </optgroup>
+    <optgroup label="Quarters">
+      <option value="q1">Q1 2026 (Jan&ndash;Mar)</option>
+      <option value="q2">Q2 2026 (Apr&ndash;Jun)</option>
+      <option value="q3">Q3 2026 (Jul&ndash;Sep)</option>
+      <option value="q4f">Q4 2026 (Forecast)</option>
+    </optgroup>
+    <option value="ytd">YTD 2026 (Jan&ndash;Sep)</option>
+  </select>
+  <span class="fcast-note" id="fcast-note">Forecast Period</span>
+  <span class="fdiv">|</span>
+  <span class="sl">Region</span>
+  <select class="fsel" id="regionFilter" onchange="applyFilters()" aria-label="Filter by region">
+    <option value="all">All Regions</option>
+    <option value="na">North America</option>
+    <option value="emea">EMEA</option>
+    <option value="apac">APAC</option>
+    <option value="latam">LATAM</option>
+  </select>
+  <span class="sl">Site</span>
+  <select class="fsel" id="siteFilter" onchange="applyFilters()" aria-label="Filter by site">
+    <option value="all">All Sites</option>
+    <option value="sgs">SGS</option>
+    <option value="wpl">WPL</option>
+    <option value="hcl">HCL</option>
+    <option value="mnl">MNL</option>
+    <option value="trc">TRC</option>
+    <option value="blr">BLR</option>
+  </select>
+  <span class="fdiv">|</span>
+  <button class="metric-toggle-btn" id="metric-btn" onclick="toggleMetricPanel()" aria-expanded="false">
+    &#9432; Metric Definitions
+  </button>
+  <span class="fsp"></span>
+  <span class="filter-info" id="filterInfo">All Regions &middot; All Sites</span>
+</div>
+
+<!-- METRIC DEFINITIONS PANEL -->
+<div id="metric-panel" class="metric-panel" style="margin:0 1.5rem;">
+  <div class="metric-panel-h">&#9432; Metric Definitions &mdash; Quality Dashboard</div>
+  <div class="metric-grid">
+    <div class="metric-def">
+      <div class="mdef-name">Quality ILA</div>
+      <div class="mdef-body">Invoice Level Accuracy &mdash; percentage of invoices processed without a quality error, measured by QTP internal review.</div>
+      <div class="mdef-scale">RAG: Blue &ge;97% | Green 95&ndash;97% | Amber 90&ndash;95% | Red &lt;90%</div>
+    </div>
+    <div class="metric-def amber">
+      <div class="mdef-name">Combined Accuracy</div>
+      <div class="mdef-body">[(Reviews + Escalations) &minus; (Markdowns + SAP Concur Errors)] &divide; (Reviews + Escalations) &times; 100. Includes escalation resolution in accuracy calculation.</div>
+      <div class="mdef-scale">Target: &ge;97% | Same RAG thresholds as Quality ILA</div>
+    </div>
+    <div class="metric-def red">
+      <div class="mdef-name">SAP Concur Error Rate</div>
+      <div class="mdef-body">Percentage of escalations tagged as "SAP Concur Error" (external label). Internally classified as Auditor Error. No formal SLA; elevated (&gt;65%) warrants Operations review.</div>
+      <div class="mdef-scale">Threshold: &gt;65% = Elevated | &le;65% = Acceptable</div>
+    </div>
+    <div class="metric-def green">
+      <div class="mdef-name">Review Coverage</div>
+      <div class="mdef-body">Percentage of audited invoices sampled for quality review. Calculated as: Reviews &divide; Invoices &times; 100.</div>
+      <div class="mdef-scale">Target: &ge;3% | &lt;1% = Critical | 1&ndash;2.99% = Monitor</div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="main">
+
+  <!-- HERO BANNER -->
+  <div class="hero" id="exec-hero">
+    <div class="hero-eye" id="exec-eye">Executive Summary &middot; September 2026</div>
+    <div class="hero-h" id="exec-h">98.27% Invoice Level Accuracy</div>
+    <div class="hero-s">Quality ILA &mdash; All Sites Combined &nbsp;|&nbsp; Combined Accuracy: <strong style="color:#fff" id="exec-cf">97.95%</strong></div>
+    <div class="hero-stats">
+      <div class="hs"><div class="hs-v" id="e-vol">18,404</div><div class="hs-l">Reviews</div></div>
+      <div class="hs"><div class="hs-v" id="e-inv">824,966</div><div class="hs-l">Invoices Audited</div></div>
+      <div class="hs"><div class="hs-v" id="e-esc">94</div><div class="hs-l">Escalations</div></div>
+      <div class="hs"><div class="hs-v" id="e-trend">+0.27pp</div><div class="hs-l">vs Prior Period</div></div>
+    </div>
+    <div class="hero-rag" id="exec-rag-badge">
+      <span class="hrd" style="background:var(--rag-blue)"></span>
+      <span id="exec-rag-lbl">Exceeds Target &ge;97% &mdash; Quality ILA Above Threshold</span>
+    </div>
+  </div>
+
+  <!-- KPI CARDS -->
+  <div class="krow">
+    <div class="kc rb" id="kc-e1">
+      <div class="kl"><abbr title="Invoice Level Accuracy &mdash; percentage of invoices reviewed without quality errors">Quality ILA</abbr></div>
+      <div class="kv rb" id="kv-e1">98.27%</div>
+      <div class="ks">Target: &ge;95.00%</div>
+      <div class="kdelta up" id="kd-e1">+0.27pp vs Aug</div>
+      <span class="kbadge rb" id="kb-e1">Exceeds Target &ge;97%</span>
+    </div>
+    <div class="kc rb" id="kc-e2">
+      <div class="kl"><abbr title="Combined Accuracy includes escalation resolution outcomes">Combined Accuracy</abbr></div>
+      <div class="kv rb" id="kv-e2">97.95%</div>
+      <div class="ks">Incl. escalation outcomes</div>
+      <div class="kdelta nt" id="kd-e2">Q3 2026 consolidated</div>
+      <span class="kbadge rb" id="kb-e2">Exceeds Target &ge;97%</span>
+    </div>
+    <div class="kc rg" id="kc-e3">
+      <div class="kl">Total Escalations</div>
+      <div class="kv" id="kv-e3">94</div>
+      <div class="ks" id="ks-e3">Sep 2026 (partial month)</div>
+      <div class="kdelta nt" id="kd-e3">&mdash;</div>
+      <span class="kbadge rg" id="kb-e3">Within SLA</span>
+    </div>
+    <div class="kc rb" id="kc-e4">
+      <div class="kl">Clients &ge;95% <abbr title="Invoice Level Accuracy">ILA</abbr></div>
+      <div class="kv rb" id="kv-e4">90.23%</div>
+      <div class="ks">1,960 / 2,171 clients</div>
+      <div class="kdelta up" id="kd-e4">+0.43pp vs Q2</div>
+      <span class="kbadge rb" id="kb-e4">Exceeds Target</span>
+    </div>
+    <div class="kc rg" id="kc-e5">
+      <div class="kl">Review Coverage</div>
+      <div class="kv" id="kv-e5">2.23%</div>
+      <div class="ks">Target: &ge;3.00%</div>
+      <div class="kdelta nt" id="kd-e5">Sampling Rate</div>
+      <span class="kbadge rg" id="kb-e5">Monitor</span>
+    </div>
+  </div>
+
+  <!-- SMART INSIGHTS PANEL -->
+  <div class="ipanel">
+    <div class="ip-header">
+      <div class="ip-badge"><span class="ip-dot"></span>Smart Narrative &mdash; Data-Driven Insights</div>
+      <span style="font-size:11px;color:rgba(255,255,255,.35);">Updates with filter selection</span>
+    </div>
+    <div class="ip-per" id="exec-ins-period">September 2026</div>
+    <div class="ins-grid" id="exec-ins-grid">
+      <!-- Populated by JS -->
+    </div>
+  </div>
+
+  <!-- CHARTS ROW 1: Quarterly Benchmark + Full-Year Forecast -->
+  <div class="g2">
+    <div class="card">
+      <div class="card-h">Quarterly <abbr title="Invoice Level Accuracy">ILA</abbr> Benchmark
+        <span class="card-sub">Q1 / Q2 / Q3 2026</span>
+      </div>
+      <div class="ch-wrap"><canvas id="c-qtr" height="220"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-h">Full-Year Forecast
+        <span class="tag purple" style="margin-left:.3rem;font-size:11px;">Statistical Projection</span>
+        <span class="card-sub">Jan&ndash;Dec 2026</span>
+      </div>
+      <div class="ch-wrap"><canvas id="c-forecast" height="220"></canvas></div>
+      <div class="card-note">Trend-based projection from Jan&ndash;Sep 2026 trajectory. Dashed line = forecast only. Not a system-generated value.</div>
+    </div>
+  </div>
+
+  <!-- CHARTS ROW 2: Site Performance Table + Combined Accuracy Monthly -->
+  <div class="g2">
+    <div class="card">
+      <div class="card-h">Site Performance <span class="card-sub" id="site-period-lbl">September 2026 &mdash; Invoice Level Accuracy by Site</span></div>
+      <div style="overflow-x:auto;">
+        <table class="stbl" aria-label="Site ILA performance">
+          <thead><tr>
+            <th>Site</th>
+            <th class="num">Reviews</th>
+            <th class="num">Errors</th>
+            <th class="num">ILA %</th>
+            <th class="center">Status</th>
+          </tr></thead>
+          <tbody id="site-table-body">
+            <tr><td><strong>SGS</strong></td><td class="num">6,969</td><td class="num">94</td><td class="num"><span class="hcell rb">98.65%</span></td><td class="center"><span class="kbadge rb">Exceeds Target</span></td></tr>
+            <tr><td><strong>HCL</strong></td><td class="num">3,625</td><td class="num">70</td><td class="num"><span class="hcell rb">98.07%</span></td><td class="center"><span class="kbadge rb">Exceeds Target</span></td></tr>
+            <tr><td><strong>WPL</strong></td><td class="num">5,545</td><td class="num">115</td><td class="num"><span class="hcell rb">97.93%</span></td><td class="center"><span class="kbadge rb">Exceeds Target</span></td></tr>
+            <tr><td><strong>MNL</strong></td><td class="num">298</td><td class="num">6</td><td class="num"><span class="hcell rb">97.99%</span></td><td class="center"><span class="kbadge rb">Exceeds Target</span></td></tr>
+            <tr><td><strong>TRC</strong></td><td class="num">155</td><td class="num">1</td><td class="num"><span class="hcell rb">99.35%</span></td><td class="center"><span class="kbadge rb">Exceeds Target</span></td></tr>
+            <tr><td><strong>BLR</strong> <small style="color:var(--ink3);font-size:10px;">Stat. anomaly (15 reviews)</small></td><td class="num">69</td><td class="num">66</td><td class="num"><span class="hcell rr">4.35%</span></td><td class="center"><span class="kbadge rr">Anomaly</span></td></tr>
+            <tr style="font-weight:700;background:#F8F9FB;"><td>All Sites (excl. BLR anomaly)</td><td class="num">16,592</td><td class="num">286</td><td class="num"><span class="hcell rb">98.28%</span></td><td class="center"><span class="kbadge rb">Exceeds Target</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card-note">Source: MP File Sep 2026 &middot; Monthly trend detail in MoM tab</div>
+    </div>
+    <div class="card">
+      <div class="card-h">Combined Accuracy &mdash; Monthly Trend <span class="card-sub">Jan&ndash;Sep 2026</span></div>
+      <div class="ch-wrap"><canvas id="c-cf-monthly" height="230"></canvas></div>
+      <div class="card-note">Combined Accuracy = [(Reviews + Escalations) &minus; (Markdowns + SAP Concur Errors)] &divide; (Reviews + Escalations) &times; 100</div>
+    </div>
+  </div>
+
+  <!-- REGIONAL COMPARISON -->
+  <div class="card">
+    <div class="card-h">Regional <abbr title="Invoice Level Accuracy">ILA</abbr> Comparison
+      <span class="card-sub" id="regional-period-lbl">September 2026</span>
+    </div>
+    <div class="ch-wrap"><canvas id="c-regional" height="160"></canvas></div>
+    <div class="card-note">Source: Q3 Executive View PDF &middot; APAC 99.18% &middot; EMEA 98.24% &middot; LATAM 91.07% &middot; NA ~98.26%</div>
+  </div>
+
+  <!-- SITE SCORECARD -->
+  <div class="card">
+    <div class="card-h">Site Scorecard
+      <span class="tag blue" style="margin-left:.4rem;" id="site-filter-lbl">All Sites</span>
+      <span class="card-sub" style="margin-left:auto;">External Tagging ILA &mdash; <span id="scorecard-period">Sep 2026</span></span>
+    </div>
+    <div id="site-scorecard"></div>
+    <div class="card-note">*BLR: Very low sample (15 reviews) &mdash; External ILA not statistically meaningful. Internal ILA = 100%. | Source: Q3 2026 Executive View PDF</div>
+  </div>
+
+  <!-- SECTION DIVIDER -->
+  <hr class="section-div">
+
+  <!-- Q4 FORECAST BANNER -->
+  <div class="fcbanner" id="fc-banner">
+    <div>
+      <div class="fc-eye">Q4 2026 &mdash; Statistical Forecast</div>
+      <div class="fc-val" id="fc-val">98.21%</div>
+    </div>
+    <div class="fc-narr" id="fc-narr">
+      Data-driven projection based on YTD trajectory (Q1: 98.14% &rarr; Q2: 98.01% &rarr; Q3: 97.98%) and seasonal training pipeline.
+      <strong style="color:rgba(255,255,255,.85);">Projected range: 97.70%&ndash;98.65%.</strong>
+      Forecast volume: ~420,000 invoices/month. Assumes no major SAP Concur system disruptions.
+    </div>
+    <div style="flex-shrink:0;text-align:center;">
+      <div style="font-size:11px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.4px;margin-bottom:.2rem;">Confidence</div>
+      <div style="font-size:1rem;font-weight:700;color:rgba(255,255,255,.85);">90% CI</div>
+      <div style="font-size:11px;color:rgba(255,255,255,.5);">97.70%&ndash;98.65%</div>
+    </div>
+  </div>
+
+  <!-- RECOMMENDED ACTIONS -->
+  <div class="card">
+    <div class="card-h">Recommended Actions <span class="card-sub">Data-driven &middot; <span id="rec-period">September 2026</span></span></div>
+    <div class="rec-list" id="rec-list">
+      <div class="rec-item">
+        <div class="rec-num">1</div>
+        <div>
+          <div class="rec-title">Operations Team Root Cause Analysis &mdash; Elevated SAP Concur Error Tagging Rate</div>
+          <div class="rec-body">65 of 94 Sep escalations (69.15%) carry the external SAP Concur Error tag. Elevated rate warrants Operations Team coaching review targeting high-error fields (Line Items, Document Separation). Target corrective action before October volume peak.</div>
+          <div class="rec-tags"><span class="rtag amber">High Priority</span><span class="rtag blue">Operations Team</span><span class="rtag navy">SAP Concur</span></div>
+        </div>
+      </div>
+      <div class="rec-item">
+        <div class="rec-num">2</div>
+        <div>
+          <div class="rec-title">Line Items Accuracy Coaching &mdash; SGS &amp; WPL Sites</div>
+          <div class="rec-body">Line Items field drives the highest error volume (586 errors in Sep, ILA 98.93%). SGS and WPL account for 73% of review volume. Targeted micro-learning modules on line-item extraction rules will yield highest ROI. Invoice Date (141 errors, 99.79%) also warrants inclusion in watch list.</div>
+          <div class="rec-tags"><span class="rtag amber">Medium Priority</span><span class="rtag green">Training</span><span class="rtag blue">SGS &middot; WPL</span></div>
+        </div>
+      </div>
+      <div class="rec-item">
+        <div class="rec-num">3</div>
+        <div>
+          <div class="rec-title">Pre-Emptive QBR Scheduling for Clients Approaching 95% SLA Boundary</div>
+          <div class="rec-body">9.77% of clients (~213) are below 95% ILA. Proactive <abbr title="Quarterly Business Review">QBR</abbr> scheduling is advised for accounts in the 90&ndash;94.99% Needs Attention band. Priority regions: LATAM (91.07%) and EMEA lower quartile. Early intervention historically reduces at-risk count by 15&ndash;20%.</div>
+          <div class="rec-tags"><span class="rtag amber">Medium Priority</span><span class="rtag blue">Client Services</span><span class="rtag green">LATAM &middot; EMEA</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ITEMS REQUIRING ATTENTION -->
+  <div class="exc-banner" id="exc-banner">&#9888; Items Requiring Attention &mdash; Below-Target or Elevated Performance Highlighted</div>
+  <div class="risk-grid" id="risk-grid">
+    <div class="risk-card warn">
+      <div class="risk-title">LATAM ILA: 91.07% &mdash; Needs Attention</div>
+      <div class="risk-body">LATAM region at 91.07% &mdash; Amber band. Down from 99.46% in January 2026. Low review volume (56 reviews in Sep) amplifies statistical variance. Active monitoring required through Q4.</div>
+      <div style="margin-top:.35rem;"><span class="kbadge ra">Needs Attention &mdash; Monitor</span> <span class="tag amber" style="font-size:11px;margin-left:.3rem;">LATAM</span></div>
+    </div>
+    <div class="risk-card warn">
+      <div class="risk-title">SAP Concur Error Rate: 64.98% YTD &mdash; Elevated</div>
+      <div class="risk-body">65% of YTD escalations carry the "SAP Concur Error" external tag (internally-classified Auditor Errors). No formal SLA target, but elevated rate (&gt;65%) warrants Operations Team review before Q4 volume increase.</div>
+      <div style="margin-top:.35rem;"><span class="kbadge ra">Elevated &mdash; Operations Review Needed</span></div>
+    </div>
+    <div class="risk-card" style="border-left-color:var(--sap-lightblue);">
+      <div class="risk-title" style="color:var(--sap-hyperlink);">BLR External ILA: 59.26% &mdash; Statistical Anomaly</div>
+      <div class="risk-body">BLR external ILA at 59.26% confirmed statistical anomaly from only 15 reviews. Internal ILA = 100%. Not indicative of systemic failure. No action required until volume &ge;50 reviews/period.</div>
+      <div style="margin-top:.35rem;"><span class="kbadge" style="background:var(--bg);color:var(--ink3);">Anomaly &mdash; Monitoring</span></div>
+    </div>
+    <div class="risk-card warn">
+      <div class="risk-title">Review Coverage: 2.23% &mdash; Below Policy Target</div>
+      <div class="risk-body">Sep 2026 review coverage at 2.23% vs 3% policy target. Gap: &minus;0.77pp. Based on Sep invoice volume (~824K), approximately 6,350 additional reviews needed to reach target.</div>
+      <div style="margin-top:.35rem;"><span class="kbadge ra">Gap &minus;0.77pp</span></div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+
+<!-- FOOTER -->
+<footer>
+  <div>
+    <strong>Global Invoice Capture Quality Dashboard</strong> &mdash; Executive View &middot; SAP Concur MBS &middot; Value Intelligence Team
+  </div>
+  <div style="text-align:right;">
+    <div>Data as of September 14, 2026 &middot; Source: MoM PDF + Internal Review PDF + RTR PDF</div>
+    <div style="font-size:11px;color:rgba(255,255,255,.25);margin-top:.15rem;">SAP Internal &mdash; Not for external distribution</div>
+  </div>
+</footer>`;
+
+// ── Web Component definition ─────────────────────────────────────────────────
+class ICQualityDashboard extends HTMLElement {
+
+  connectedCallback() {
+    // Inject dashboard HTML
+    this.innerHTML = WIDGET_TMPL;
+
+    // Initialize after a tick to ensure DOM is settled
+    var self = this;
+    setTimeout(function() {
+      buildCharts();
+      buildSiteScorecard('sep');
+      update();
+      buildCombinedAccuracyChart();
+    }, 80);
+  }
+
+  // Called by SAC when data bindings are updated
+  onCustomWidgetAfterUpdate(changedProperties) {
+    if (changedProperties && changedProperties.dataBindings) {
+      applyCWLiveData(this);
+    }
+  }
+
+  // Called by SAC when widget is removed from canvas
+  onCustomWidgetDestroy() {
+    // Destroy Chart.js instances to avoid memory leaks
+    Object.keys(CH).forEach(function(k) {
+      if (CH[k] && typeof CH[k].destroy === 'function') CH[k].destroy();
+    });
+  }
+}
+
+customElements.define('ic-quality-dashboard', ICQualityDashboard);
+
+</script>
+</body>
+</html>
