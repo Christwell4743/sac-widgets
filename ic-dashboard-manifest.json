@@ -1,0 +1,75 @@
+{
+  "id": "com.custom.icdashboard",
+  "version": "1.0.0",
+  "name": "IC Executive Dashboard",
+  "description": "Invoice Capture Executive Command Center — data-bound, fully dynamic. Renders narrative, ECharts gauge, KPIs, trend chart, and escalation breakdown from live IC_COMBINED_AM2 measures.",
+  "newInstancePrefix": "ICDashboard",
+  "vendor": "Invoice Capture Operations",
+  "license": "internal",
+  "main": "ic-dashboard.js",
+  "builder": "ic-dashboard-builder.js",
+  "icon": "",
+
+  "webcomponents": [{
+    "kind": "main",
+    "tag": "com-custom-icdashboard",
+    "url": "https://cdn.jsdelivr.net/gh/Christwell4743/sac-widgets@main/ic-dashboard.js",
+    "integrity": "",
+    "ignoreIntegrity": true
+  },{
+    "kind": "builder",
+    "tag": "com-custom-icdashboard-builder",
+    "url": "https://cdn.jsdelivr.net/gh/Christwell4743/sac-widgets@main/ic-dashboard-builder.js",
+    "integrity": "",
+    "ignoreIntegrity": true
+  }],
+
+  "properties": {
+    "ila": {
+      "type": "number",
+      "description": "Invoice Level Accuracy % (fallback / override)",
+      "default": 98.15
+    },
+    "concurRate": {
+      "type": "number",
+      "description": "SAP Concur Error Rate % (fallback / override)",
+      "default": 64.40
+    },
+    "reviews": {
+      "type": "number",
+      "description": "Total Quality Review Count (fallback / override)",
+      "default": 585226
+    },
+    "escalations": {
+      "type": "number",
+      "description": "Total Escalation Count (fallback / override)",
+      "default": 8143
+    },
+    "eoy": {
+      "type": "number",
+      "description": "EOY Forecast ILA % (fallback / override)",
+      "default": 98.15
+    },
+    "monthlyData": {
+      "type": "string",
+      "description": "JSON array of monthly ILA values [{month,ila}]. Optional override.",
+      "default": ""
+    }
+  },
+
+  "dataBindings": {
+    "dashboardData": {
+      "feeds": [{
+        "id": "measures",
+        "description": "Bind your IC_COMBINED_AM2 measures here: Invoice Level Accuracy Pct, SAP Concur Error Rate Pct, Quality Review Count, Escalation Review Count, EOY Forecast RLA",
+        "type": "measure",
+        "min": 0,
+        "max": 10
+      }]
+    }
+  },
+
+  "styling": {
+    "padding": false
+  }
+}
