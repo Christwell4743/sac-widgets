@@ -1,6 +1,6 @@
 {
   "id": "com.custom.icdashboard",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "name": "IC Executive Dashboard",
   "description": "Invoice Capture Executive Command Center — data-bound widget. Renders live narrative, ECharts gauge, KPI cards, trend chart and escalation breakdown from IC_COMBINED_AM2 measures.",
   "newInstancePrefix": "ICDashboard",
