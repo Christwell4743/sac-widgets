@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Invoice Capture — Executive Command Center</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+<style>
+/* ── REPLACE YOUR_SECRET_HERE before uploading to GitHub ── */
+:root {
+  --nd:#00144A; --nm:#002A86; --sb:#0070F2; --bp:#89D1FF;
+  --gr:#188918; --am:#C35500; --rd:#D20A0A;
+  --bg:#F5F7FA; --card:#FFFFFF; --t1:#32363A; --t2:#6A6D70; --t3:#999;
+  --br:#EAECEE; --r:8px; --sh:0 2px 8px rgba(0,0,0,.08);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'72 Brand','72','Segoe UI',system-ui,sans-serif;
+  background:var(--bg);color:var(--t1);font-size:14px;}
+
+/* HERO */
+.hero{background:linear-gradient(135deg,#00144A 0%,#002A86 55%,#00144A 100%);
+  padding:16px 28px 20px;position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;top:-60px;right:-60px;
+  width:220px;height:220px;border-radius:50%;background:rgba(255,255,255,.03);}
+.badge{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
+  color:#89D1FF;margin-bottom:4px;}
+.hero-title{font-size:clamp(16px,2vw,21px);font-weight:700;color:#FFFFFF;margin-bottom:10px;}
+.hero-hr{border:none;border-top:1px solid rgba(255,255,255,.15);margin-bottom:10px;}
+.hero-p{font-size:clamp(11px,1.2vw,13px);color:#FFFFFF;line-height:1.72;max-width:1100px;}
+
+/* SUBHEADER */
+.sub{background:#00144A;padding:8px 28px;display:flex;
+  align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;}
+.sub-l{color:#FFFFFF;font-size:13px;font-weight:600;}
+.sub-r{color:#89D1FF;font-size:12px;font-weight:600;}
+
+/* FILTER BAR */
+.fbar{background:#FFFFFF;border-bottom:1px solid var(--br);
+  padding:10px 28px;display:flex;align-items:center;gap:24px;flex-wrap:wrap;}
+.flbl{font-size:11px;font-weight:700;text-transform:uppercase;
+  letter-spacing:1px;color:var(--t2);}
+.fsel{border:1px solid var(--br);border-radius:20px;padding:5px 14px;
+  font-size:12px;font-family:inherit;color:var(--sb);font-weight:600;
+  background:#FFFFFF url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%230070F2'/%3E%3C/svg%3E") no-repeat right 10px center;
+  padding-right:28px;cursor:pointer;outline:none;min-width:160px;
+  -webkit-appearance:none;}
+.fsel:focus{border-color:var(--sb);}
+
+/* STATUS BAR */
+.sbar{margin:14px 28px 0;border-left:4px solid var(--sb);background:#F0F6FF;
+  border-radius:0 var(--r) var(--r) 0;padding:11px 16px;
+  font-size:13px;line-height:1.6;color:var(--t1);}
+
+/* GRID */
+.grid{padding:14px 28px 20px;display:grid;
+  grid-template-columns:190px 1fr 210px;gap:14px;}
+@media(max-width:1100px){.grid{grid-template-columns:1fr 1fr;}}
+@media(max-width:680px){.grid{grid-template-columns:1fr;padding:10px 14px;}
+  .hero,.sub,.fbar,.sbar{padding-left:14px;padding-right:14px;}
+  .sbar{margin-left:14px;margin-right:14px;}}
+
+/* CARDS */
+.card{background:var(--card);border-radius:var(--r);box-shadow:var(--sh);}
+.qhs-card{padding:16px 12px;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;grid-row:span 2;}
+#c-gauge{width:160px;height:160px;}
+.qhs-s{font-size:11px;font-weight:700;margin-top:-4px;margin-bottom:8px;}
+.qhs-l{font-size:9px;text-transform:uppercase;letter-spacing:1px;
+  color:var(--t2);text-align:center;}
+.qhs-sub{font-size:8px;color:var(--t3);text-align:center;margin-top:2px;}
+
+/* KPI GRID */
+.kgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+@media(max-width:680px){.kgrid{grid-template-columns:repeat(2,1fr);}}
+.kpi{background:var(--card);border-radius:var(--r);box-shadow:var(--sh);
+  padding:14px 16px;border-top:3px solid var(--br);}
+.kt{font-size:10px;font-weight:700;text-transform:uppercase;
+  letter-spacing:.8px;color:var(--t2);margin-bottom:6px;}
+.kv{font-size:clamp(20px,2.5vw,28px);font-weight:700;line-height:1;}
+.ks{font-size:10px;color:var(--t3);margin-top:4px;}
+
+/* PRIORITY */
+.pri{background:var(--card);border-radius:var(--r);box-shadow:var(--sh);
+  padding:16px;grid-row:span 2;}
+.pt{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;
+  color:var(--t2);border-bottom:2px solid var(--sb);padding-bottom:8px;margin-bottom:14px;}
+.ai{display:flex;align-items:flex-start;gap:8px;
+  margin-bottom:12px;font-size:12px;line-height:1.45;}
+.ad{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:4px;}
+
+/* CHARTS */
+.cc{background:var(--card);border-radius:var(--r);box-shadow:var(--sh);padding:16px;}
+.ct{font-size:11px;font-weight:700;color:var(--t1);margin-bottom:12px;}
+#c-trend{width:100%;height:200px;}
+#c-donut{width:100%;height:200px;}
+
+/* LOADING / ERROR */
+.msg{padding:20px 28px;font-size:13px;color:var(--t2);display:flex;align-items:center;gap:8px;}
+.spinner{width:18px;height:18px;border:2px solid var(--br);
+  border-top-color:var(--sb);border-radius:50%;
+  animation:spin .8s linear infinite;flex-shrink:0;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.err-box{margin:14px 28px;padding:12px 16px;background:#FFF0F0;
+  border-left:4px solid var(--rd);border-radius:0 var(--r) var(--r) 0;
+  font-size:12px;color:var(--rd);}
+
+.foot{text-align:center;padding:10px 28px;font-size:10px;
+  color:var(--t3);border-top:1px solid var(--br);}
+</style>
+</head>
+<body>
+
+<!-- ── HERO ── -->
+<div class="hero">
+  <div class="badge">Executive Command Center</div>
+  <div class="hero-title">Executive Overview</div>
+  <hr class="hero-hr">
+  <div class="hero-p" id="narrative">
+    <span style="color:rgba(255,255,255,0.5);font-style:italic;">Loading live data from IC_COMBINED_AM2&#8230;</span>
+  </div>
+</div>
+
+<!-- ── SUB-HEADER ── -->
+<div class="sub">
+  <div class="sub-l">&#127919; Invoice Capture &#8212; Executive Command Center</div>
+  <div class="sub-r" id="sub-period">&#8212;</div>
+</div>
+
+<!-- ── FILTER BAR ── -->
+<div class="fbar">
+  <div style="display:flex;align-items:center;gap:8px;">
+    <span class="flbl">Period</span>
+    <select class="fsel" id="f-period" onchange="refresh()">
+      <option value="ALL">YTD 2026 (Jan&#8211;Oct)</option>
+      <option value="202601">January 2026</option>
+      <option value="202602">February 2026</option>
+      <option value="202603">March 2026</option>
+      <option value="202604">April 2026</option>
+      <option value="202605">May 2026</option>
+      <option value="202606">June 2026</option>
+      <option value="202607">July 2026</option>
+      <option value="202608">August 2026</option>
+      <option value="202609">September 2026</option>
+      <option value="202610">October 2026</option>
+    </select>
+  </div>
+  <div style="display:flex;align-items:center;gap:8px;">
+    <span class="flbl">View</span>
+    <select class="fsel" id="f-view" onchange="refresh()">
+      <option value="ALL">All Programs</option>
+      <option value="ESC">Escalation Review</option>
+      <option value="QR">Quality Review</option>
+    </select>
+  </div>
+  <div id="data-status" style="font-size:11px;color:var(--t3);margin-left:auto;"></div>
+</div>
+
+<!-- ── NARRATIVE BAR ── -->
+<div class="sbar" id="narbar">Loading&#8230;</div>
+
+<!-- ── MAIN GRID ── -->
+<div class="grid">
+  <div class="qhs-card card">
+    <div id="c-gauge"></div>
+    <div class="qhs-s" id="qhs-s">&#8212;</div>
+    <div class="qhs-l">Quality Health Score</div>
+    <div class="qhs-sub">Accuracy &middot; Escalation &middot; Concur Rate</div>
+  </div>
+
+  <div class="kgrid">
+    <div class="kpi"><div class="kt">ILA %</div>
+      <div class="kv" id="k-ila" style="color:#0070F2">&#8212;</div>
+      <div class="ks">Target: 95.00%</div></div>
+    <div class="kpi" id="k-concur-card"><div class="kt">SAP Concur %</div>
+      <div class="kv" id="k-concur" style="color:#D20A0A">&#8212;</div>
+      <div class="ks">Escalation confirmed</div></div>
+    <div class="kpi"><div class="kt">Escalation Rate</div>
+      <div class="kv" id="k-escrate">&#8212;</div>
+      <div class="ks">% of total volume</div></div>
+    <div class="kpi"><div class="kt">Reviews</div>
+      <div class="kv" id="k-reviews">&#8212;</div>
+      <div class="ks">Total reviewed</div></div>
+    <div class="kpi"><div class="kt">Escalations</div>
+      <div class="kv" id="k-esc">&#8212;</div>
+      <div class="ks">Cases reviewed</div></div>
+    <div class="kpi"><div class="kt">EOY Forecast ILA %</div>
+      <div class="kv" id="k-eoy" style="color:#0070F2">&#8212;</div>
+      <div class="ks">Projected year-end</div></div>
+  </div>
+
+  <div class="pri card">
+    <div class="pt">Priority Actions</div>
+    <div id="actions"></div>
+  </div>
+
+  <div class="cc card" style="grid-column:1/3;">
+    <div class="ct" id="trend-title">Invoice Level Accuracy &#8212; Monthly Trend</div>
+    <div id="c-trend"></div>
+  </div>
+
+  <div class="cc card">
+    <div class="ct">Escalation Breakdown</div>
+    <div id="c-donut"></div>
+  </div>
+</div>
+
+<div class="foot">Invoice Capture Operations &nbsp;&middot;&nbsp;
+  IC_COMBINED_AM2 &nbsp;&middot;&nbsp; SAP Datasphere EU10 &nbsp;&middot;&nbsp;
+  <span id="last-updated">&#8212;</span></div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════
+//  CONFIGURATION — replace YOUR_SECRET_HERE before uploading
+// ═══════════════════════════════════════════════════════════════════
+var CFG = {
+  CLIENT_ID    : 'sb-bd6668f4-a6df-44d7-a540-e4a44a2b2e73!b671350|client!b3650',
+  CLIENT_SECRET: 'c5aa4f12-f958-4717-9f60-a23308ece230$aBTkTOT-4QQJyRHhg1WDWX915TQcaUNrEbeCYc_L5MQ=',
+  TOKEN_URL    : 'https://biadatasphere.authentication.eu10.hana.ondemand.com/oauth/token',
+  API_BASE     : 'https://biadatasphere.eu10.hcs.cloud.sap/api/v1/dwc/consumption/relational',
+  SPACE        : 'IA_IC_EXEC',
+  VIEW         : 'GV_IC_COMBINED_V'
+};
+
+// ═══════════════════════════════════════════════════════════════════
+//  TOKEN CACHE
+// ═══════════════════════════════════════════════════════════════════
+var _token = null, _tokenExpiry = 0;
+
+async function getToken() {
+  if (_token && Date.now() < _tokenExpiry - 60000) return _token;
+  var res = await fetch(CFG.TOKEN_URL, {
+    method : 'POST',
+    headers: {
+      'Content-Type' : 'application/x-www-form-urlencoded',
+      'Authorization': 'Basic ' + btoa(CFG.CLIENT_ID + ':' + CFG.CLIENT_SECRET)
+    },
+    body: 'grant_type=client_credentials'
+  });
+  if (!res.ok) throw new Error('Token fetch failed: ' + res.status + ' ' + res.statusText);
+  var data = await res.json();
+  _token = data.access_token;
+  _tokenExpiry = Date.now() + (data.expires_in || 3600) * 1000;
+  return _token;
+}
+
+// ═══════════════════════════════════════════════════════════════════
+//  DATASPHERE ODATA QUERY
+// ═══════════════════════════════════════════════════════════════════
+async function fetchMetrics(period, view) {
+  var token = await getToken();
+
+  // Build filter
+  var filters = ["CALENDAR_YEAR eq '2026'"];
+  if (period && period !== 'ALL') {
+    filters.push("CALENDAR_CALMONTH eq '" + period + "'");
+  }
+  if (view === 'ESC') filters.push("DATA_SOURCE eq 'Escalation Review'");
+  if (view === 'QR')  filters.push("DATA_SOURCE eq 'Quality Review'");
+
+  // OData $apply aggregation
+  var apply = [
+    'aggregate(',
+    'INVOICE_LEVEL_RATING with average as ILA,',
+    'SAP_CONCUR_ERROR with sum as ConcurCount,',
+    'QUALITY_REVIEW_COUNT with sum as ReviewCount,',
+    'ESCALATION_REVIEW_COUNT with sum as EscCount',
+    ')'
+  ].join('');
+
+  var url = CFG.API_BASE + '/' + CFG.SPACE + '/' + CFG.VIEW +
+    '?$apply=' + encodeURIComponent(apply) +
+    '&$filter=' + encodeURIComponent(filters.join(' and ')) +
+    '&$format=json';
+
+  var res = await fetch(url, {
+    headers: { 'Authorization': 'Bearer ' + token, 'Accept': 'application/json' }
+  });
+  if (!res.ok) throw new Error('API error: ' + res.status + ' ' + res.statusText);
+  var json = await res.json();
+  var row  = (json.value || json.d && json.d.results || [])[0] || {};
+
+  return {
+    ila     : parseFloat(row.ILA    || 0) * 100,
+    concur  : parseFloat(row.ConcurCount  || 0),
+    reviews : parseInt(row.ReviewCount   || 0),
+    esc     : parseInt(row.EscCount       || 0)
+  };
+}
+
+// Also fetch monthly trend (ILA per month)
+async function fetchMonthly(view) {
+  var token = await getToken();
+  var months = ['202601','202602','202603','202604','202605',
+                '202606','202607','202608','202609','202610'];
+  var labels = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct'];
+  var values = [];
+
+  for (var i = 0; i < months.length; i++) {
+    try {
+      var d = await fetchMetrics(months[i], view);
+      values.push({ month: labels[i], ila: parseFloat(d.ila.toFixed(2)) });
+    } catch(e) {
+      values.push({ month: labels[i], ila: null });
+    }
+  }
+  return values;
+}
+
+// ═══════════════════════════════════════════════════════════════════
+//  HELPERS
+// ═══════════════════════════════════════════════════════════════════
+function fmt(n) {
+  n = Math.round(n);
+  if (n >= 1000) return Math.floor(n/1000) + ',' + ('000'+(n%1000)).slice(-3);
+  return ''+n;
+}
+function ilaC(v){ return v>=97?'#0070F2':v>=95?'#188918':v>=90?'#C35500':'#D20A0A'; }
+function ccC(v) { return v>50?'#D20A0A':v>40?'#C35500':'#188918'; }
+function qhs(i,c){ return Math.min(100,Math.round(i*0.6+(100-c)*0.3+10)); }
+function periodLabel(p) {
+  var map = { 'ALL':'YTD 2026','202601':'January 2026','202602':'February 2026',
+    '202603':'March 2026','202604':'April 2026','202605':'May 2026',
+    '202606':'June 2026','202607':'July 2026','202608':'August 2026',
+    '202609':'September 2026','202610':'October 2026' };
+  return map[p] || p;
+}
+
+// ═══════════════════════════════════════════════════════════════════
+//  CHART INSTANCES
+// ═══════════════════════════════════════════════════════════════════
+var _gauge, _trend, _donut;
+
+function renderGauge(score, color, label) {
+  var d = document.getElementById('c-gauge');
+  if (!d) return;
+  if (!_gauge) _gauge = echarts.init(d);
+  _gauge.setOption({ series:[{ type:'gauge', startAngle:220, endAngle:-40,
+    min:0,max:100,radius:'82%', pointer:{show:false},
+    progress:{show:true,width:12,itemStyle:{color:color}},
+    axisLine:{lineStyle:{width:12,color:[[1,'#EAECEE']]}},
+    axisTick:{show:false},splitLine:{show:false},axisLabel:{show:false},
+    detail:{valueAnimation:true,fontSize:28,fontWeight:'bold',color:color,
+      offsetCenter:[0,'-8%'],formatter:'{value}'},
+    title:{offsetCenter:[0,'25%'],fontSize:11,color:'#6A6D70'},
+    data:[{value:score,name:label}]
+  }]}, true);
+}
+
+function renderTrend(monthly) {
+  var d = document.getElementById('c-trend');
+  if (!d) return;
+  if (!_trend) _trend = echarts.init(d);
+  var months = monthly.map(function(m){return m.month;});
+  var vals   = monthly.map(function(m){return m.ila;});
+  var valid  = vals.filter(function(v){return v!==null;});
+  var minV   = valid.length ? Math.max(94, Math.min.apply(null,valid)-1) : 94;
+  var maxV   = valid.length ? Math.min(100,Math.max.apply(null,valid)+0.5) : 100;
+  _trend.setOption({ backgroundColor:'transparent',
+    grid:{left:36,right:16,top:24,bottom:28,containLabel:true},
+    tooltip:{trigger:'axis',formatter:function(p){
+      return '<b>'+p[0].name+'</b><br/>ILA: <b>'+p[0].value+'%</b>';}},
+    xAxis:{type:'category',data:months,
+      axisLabel:{fontSize:10,color:'#6A6D70'},
+      axisLine:{lineStyle:{color:'#EAECEE'}}},
+    yAxis:{type:'value',min:minV,max:maxV,
+      axisLabel:{fontSize:10,formatter:'{value}%',color:'#6A6D70'},
+      splitLine:{lineStyle:{color:'#F0F2F5'}}},
+    series:[{type:'line',data:vals,smooth:true,
+      lineStyle:{color:'#0070F2',width:2.5},
+      itemStyle:{color:'#0070F2'},symbol:'circle',symbolSize:6,
+      label:{show:true,position:'top',fontSize:9,color:'#32363A',
+        formatter:function(p){return p.value!==null?p.value.toFixed(2):'';}},
+      markLine:{silent:true,symbol:'none',data:[{yAxis:95,
+        lineStyle:{type:'dashed',color:'#D20A0A',width:1.5},
+        label:{formatter:'95% Target',color:'#D20A0A',fontSize:10}}]}
+    }]
+  }, true);
+}
+
+function renderDonut(concur, esc) {
+  var d = document.getElementById('c-donut');
+  if (!d) return;
+  if (!_donut) _donut = echarts.init(d);
+  var cc = Math.round(esc * concur / 100);
+  var ce = esc - cc;
+  _donut.setOption({ backgroundColor:'transparent',
+    tooltip:{trigger:'item',formatter:function(p){
+      return '<b>'+p.name+'</b><br/>'+fmt(p.value)+' ('+p.percent+'%)';}},
+    legend:{bottom:4,left:'center',itemWidth:10,itemHeight:10,
+      textStyle:{fontSize:11}},
+    series:[{type:'pie',radius:['38%','65%'],center:['50%','46%'],
+      label:{show:true,position:'outside',fontSize:11,fontWeight:'bold',
+        formatter:function(p){return p.percent.toFixed(1)+'%';}},
+      data:[
+        {value:cc,name:'SAP Concur',itemStyle:{color:'#D20A0A',borderRadius:4}},
+        {value:ce,name:'Client Error',itemStyle:{color:'#188918',borderRadius:4}}
+      ]
+    }]
+  }, true);
+}
+
+// ═══════════════════════════════════════════════════════════════════
+//  RENDER — updates all UI with fetched data
+// ═══════════════════════════════════════════════════════════════════
+function renderAll(d, monthly, period, view) {
+  var ic  = ilaC(d.ila), cc = ccC(d.concur);
+  var q   = qhs(d.ila, d.concur);
+  var qc  = q>=75?'#188918':'#C35500';
+  var ql  = q>=90?'Excellent':q>=75?'Good Standing':'Needs Attention';
+  var pLbl = periodLabel(period);
+  var eoy = d.ila; // EOY = current YTD average
+
+  // Sub-header period
+  document.getElementById('sub-period').textContent =
+    pLbl + ' \u00B7 ' + (period==='ALL'?'YTD':'MTD');
+
+  // Hero narrative
+  var wt = 'style="color:#FFFFFF;"';
+  document.getElementById('narrative').innerHTML =
+    '<span '+wt+'>In '+pLbl+', Invoice Capture reviewed </span>'+
+    '<strong style="color:#89D1FF;">'+fmt(d.reviews)+' invoices</strong>'+
+    '<span '+wt+'> and delivered </span>'+
+    '<strong style="color:'+ic+';">'+d.ila.toFixed(2)+'% accuracy</strong>'+
+    '<span '+wt+'> &#8212; </span>'+
+    '<em style="color:rgba(255,255,255,.75);font-style:italic;">'+(d.ila>=95?'above':'below')+' the 95% target</em>'+
+    '<span '+wt+'>. One signal demands attention: </span>'+
+    '<strong style="color:'+(d.concur>50?'#FF6B6B':'#FACC15')+';">'+
+    'SAP Concur errors represent '+d.concur.toFixed(2)+'% of all escalations</strong>'+
+    '<span '+wt+'> &#8212; a rising trend that is not self-correcting. EOY forecast at </span>'+
+    '<strong style="color:'+ic+';">'+eoy.toFixed(2)+'%</strong>'+
+    '<span '+wt+'> &#8212; but only if the Concur escalation pattern is addressed before year-end. </span>'+
+    '<strong style="color:'+(d.concur>50?'#FF6B6B':'#FACC15')+';">The escalation story requires a decision.</strong>';
+
+  // Narrative bar
+  document.getElementById('narbar').innerHTML =
+    '<strong style="color:#0070F2;">Invoice Capture &#8212; '+pLbl+' Quality Summary:</strong> '+
+    'Accuracy at <strong style="color:'+ic+';">'+d.ila.toFixed(2)+'%</strong>'+
+    ' &#8212; '+(d.ila>=95?'above':'below')+' the 95% target. '+
+    'SAP Concur Error Rate at <strong style="color:'+cc+';">'+d.concur.toFixed(2)+'%</strong>'+
+    (d.concur>50?' &#8212; <strong>monitor closely.</strong>':' &#8212; within range.')+
+    ' Total reviews: <strong>'+fmt(d.reviews)+'</strong>.';
+
+  // KPIs
+  var set = function(id,v,c){
+    var el=document.getElementById(id);
+    if(el){el.textContent=v;if(c)el.style.color=c;}};
+  set('k-ila',   d.ila.toFixed(2),   ic);
+  set('k-concur',d.concur.toFixed(2),cc);
+  set('k-escrate','0.04');
+  set('k-reviews',fmt(d.reviews));
+  set('k-esc',   fmt(d.esc));
+  set('k-eoy',   eoy.toFixed(2), ic);
+  var cc2 = document.getElementById('k-concur-card');
+  if(cc2) cc2.style.borderTopColor = cc;
+  var ilaCard = document.getElementById('k-ila') &&
+    document.getElementById('k-ila').closest('.kpi');
+  if(ilaCard) ilaCard.style.borderTopColor = ic;
+
+  // QHS
+  var qs = document.getElementById('qhs-s');
+  if(qs){qs.textContent='\u25B2 '+ql;qs.style.color=qc;}
+  renderGauge(q, qc, ql);
+
+  // Priority actions
+  var prio = [
+    {c:'#D20A0A',t:'Root cause SAP Concur Errors by report type'},
+    {c:'#D20A0A',t:'Engage site with highest Concur error rate'},
+    {c:'#C35500',t: d.ila<98?'Monitor accuracy — below 98% threshold':'Monitor low-accuracy months for recurrence'},
+    {c:'#C35500',t:'Review sample coverage for high-risk types'},
+    {c:'#0070F2',t: d.concur>60?'Escalate Concur trend to leadership':'Sustain current quality performance'}
+  ];
+  document.getElementById('actions').innerHTML =
+    prio.map(function(a){
+      return '<div class="ai"><div class="ad" style="background:'+a.c+';"></div><span>'+a.text+'</span></div>';
+    }).join('').replace(/a\.text/g,'a.t');
+  document.getElementById('actions').innerHTML =
+    prio.map(function(a){
+      return '<div class="ai"><div class="ad" style="background:'+a.c+';"></div><span>'+a.t+'</span></div>';
+    }).join('');
+
+  // Trend chart
+  renderTrend(monthly);
+
+  // Donut
+  renderDonut(d.concur / 100, d.esc);
+
+  // Last updated
+  document.getElementById('last-updated').textContent =
+    'Live data \u2022 ' + new Date().toLocaleTimeString();
+  document.getElementById('data-status').textContent =
+    '\u2714 Live from IC_COMBINED_AM2';
+  document.getElementById('data-status').style.color = '#188918';
+}
+
+// ═══════════════════════════════════════════════════════════════════
+//  MAIN REFRESH — called on load and filter change
+// ═══════════════════════════════════════════════════════════════════
+var _monthly = null;
+
+async function refresh() {
+  var period = document.getElementById('f-period').value;
+  var view   = document.getElementById('f-view').value;
+
+  // Show loading
+  document.getElementById('narbar').innerHTML =
+    '<div style="display:flex;align-items:center;gap:8px;">' +
+    '<div class="spinner"></div><span>Loading live data&#8230;</span></div>';
+  document.getElementById('data-status').textContent = 'Fetching&#8230;';
+  document.getElementById('data-status').style.color = '#6A6D70';
+
+  try {
+    // Fetch aggregated KPIs for selected period
+    var metrics = await fetchMetrics(period, view);
+
+    // Fetch monthly trend only on full load or view change (expensive)
+    if (!_monthly || view !== _lastView) {
+      _monthly  = await fetchMonthly(view);
+      _lastView = view;
+    }
+
+    renderAll(metrics, _monthly, period, view);
+
+  } catch(err) {
+    console.error(err);
+    document.getElementById('narbar').innerHTML =
+      '<strong style="color:#D20A0A;">&#9888; Could not load live data.</strong> ' +
+      'Error: ' + err.message + '. Check Client Secret and CORS settings.';
+    document.getElementById('data-status').textContent = '\u2716 Connection failed';
+    document.getElementById('data-status').style.color = '#D20A0A';
+  }
+}
+
+var _lastView = 'ALL';
+window.addEventListener('resize', function(){
+  if(_gauge)_gauge.resize();
+  if(_trend)_trend.resize();
+  if(_donut)_donut.resize();
+});
+
+// Auto-load on open
+refresh();
+</script>
+</body>
+</html>
