@@ -159,14 +159,14 @@
 <style>${CSS}</style>
 <div id="icd-root">
   <div class="hero">
-    <div class="badge">Executive Command Center</div>
-    <div class="hero-title">Executive Overview</div>
+    <div class="badge" style="color:#89D1FF !important;">Executive Command Center</div>
+    <div class="hero-title" style="color:#FFFFFF !important;">Executive Overview</div>
     <hr class="hero-hr">
-    <div class="hero-p" id="icd-narrative">Loading live data&#8230;</div>
+    <div class="hero-p" id="icd-narrative" style="color:#FFFFFF !important;">Loading live data&#8230;</div>
   </div>
   <div class="sub">
-    <div class="sub-title">&#127919; Invoice Capture &#8212; Executive Command Center</div>
-    <div class="sub-period" id="icd-period">&#8212;</div>
+    <div class="sub-title" style="color:#FFFFFF !important;">&#127919; Invoice Capture &#8212; Executive Command Center</div>
+    <div class="sub-period" style="color:#89D1FF !important;" id="icd-period">&#8212;</div>
   </div>
   <div class="narbar" id="icd-narbar">Loading&#8230;</div>
   <div class="grid">
@@ -260,19 +260,24 @@
     const concurDeg = Math.round(concur / 100 * 360);
     const status = ila >= 95 ? 'on track' : 'below target';
 
-    /* Narrative */
+    /* Narrative — wrap ALL text in explicit white spans to beat SAC specificity */
+    var wt = 'style="color:#FFFFFF;"';
     root.querySelector('#icd-narrative').innerHTML =
-      'Invoice Capture reviewed <strong style="color:#89D1FF;">' + fmt(rev) + ' invoices</strong>' +
-      ' and delivered <strong style="color:' + (ila >= 97 ? '#4ADE80' : ila >= 95 ? '#FACC15' : '#FF6B6B') + ';">' +
+      '<span ' + wt + '>Invoice Capture reviewed </span>' +
+      '<strong style="color:#89D1FF;">' + fmt(rev) + ' invoices</strong>' +
+      '<span ' + wt + '> and delivered </span>' +
+      '<strong style="color:' + (ila >= 97 ? '#4ADE80' : ila >= 95 ? '#FACC15' : '#FF6B6B') + ';">' +
       ila.toFixed(2) + '% accuracy</strong>' +
-      ' &#8212; <em style="color:rgba(255,255,255,.75);">' + status + ' against the 95% target</em>.' +
-      ' One signal demands attention: <strong style="color:' + (concur > 50 ? '#FF6B6B' : '#FACC15') + ';">' +
+      '<span ' + wt + '> &#8212; </span>' +
+      '<em style="color:rgba(255,255,255,0.75);font-style:italic;">' + status + ' against the 95% target</em>' +
+      '<span ' + wt + '>. One signal demands attention: </span>' +
+      '<strong style="color:' + (concur > 50 ? '#FF6B6B' : '#FACC15') + ';">' +
       'SAP Concur errors represent ' + concur.toFixed(2) + '% of all escalations</strong>' +
-      ' &#8212; a rising trend that is not self-correcting.' +
-      ' EOY forecast at <strong style="color:' + (ila >= 97 ? '#4ADE80' : '#FACC15') + ';">' +
+      '<span ' + wt + '> &#8212; a rising trend that is not self-correcting. EOY forecast at </span>' +
+      '<strong style="color:' + (ila >= 97 ? '#4ADE80' : '#FACC15') + ';">' +
       eoy.toFixed(2) + '%</strong>' +
-      ' &#8212; but only if the Concur escalation pattern is addressed before year-end.' +
-      ' <strong style="color:' + (concur > 50 ? '#FF6B6B' : '#FACC15') + ';">' +
+      '<span ' + wt + '> &#8212; but only if the Concur escalation pattern is addressed before year-end. </span>' +
+      '<strong style="color:' + (concur > 50 ? '#FF6B6B' : '#FACC15') + ';">' +
       'The escalation story requires a decision.</strong>';
 
     /* Sub-period */
@@ -287,19 +292,31 @@
       (concur > 50 ? ' &#8212; <strong>monitor closely.</strong>' : ' &#8212; within range.') +
       ' Total reviews: <strong>' + fmt(rev) + '</strong>.';
 
-    /* KPIs */
-    root.querySelector('#icd-ila').textContent    = ila.toFixed(2);
-    root.querySelector('#icd-concur').textContent  = concur.toFixed(2);
-    root.querySelector('#icd-escrate').textContent = escRate.toFixed(2);
-    root.querySelector('#icd-reviews').textContent = fmt(rev);
-    root.querySelector('#icd-esc').textContent     = fmt(esc);
-    root.querySelector('#icd-eoy').textContent     = eoy.toFixed(2);
+    /* KPIs — apply colors via inline style, not CSS class (beats SAC specificity) */
+    var ilaEl = root.querySelector('#icd-ila');
+    if (ilaEl) { ilaEl.textContent = ila.toFixed(2); ilaEl.style.color = ic; }
 
-    const ilaCard    = root.querySelector('.kpi.blue');
-    if (ilaCard) ilaCard.className = 'kpi ' + ilaRag(ila);
+    var concurEl = root.querySelector('#icd-concur');
+    if (concurEl) { concurEl.textContent = concur.toFixed(2); concurEl.style.color = cc; }
 
-    const concurCard = root.querySelector('#icd-concur-card');
-    if (concurCard) concurCard.className = 'kpi ' + (concur > 50 ? 'red' : 'amber');
+    var escrateEl = root.querySelector('#icd-escrate');
+    if (escrateEl) { escrateEl.textContent = escRate.toFixed(2); escrateEl.style.color = '#32363A'; }
+
+    var reviewsEl = root.querySelector('#icd-reviews');
+    if (reviewsEl) { reviewsEl.textContent = fmt(rev); reviewsEl.style.color = '#32363A'; }
+
+    var escEl = root.querySelector('#icd-esc');
+    if (escEl) { escEl.textContent = fmt(esc); escEl.style.color = '#32363A'; }
+
+    var eoyEl = root.querySelector('#icd-eoy');
+    if (eoyEl) { eoyEl.textContent = eoy.toFixed(2); eoyEl.style.color = ic; }
+
+    /* KPI card top border colors via inline style */
+    var ilaCard = root.querySelector('#icd-ila') && root.querySelector('#icd-ila').closest('.kpi');
+    if (ilaCard) ilaCard.style.borderTopColor = ic;
+
+    var concurCard = root.querySelector('#icd-concur-card');
+    if (concurCard) concurCard.style.borderTopColor = cc;
 
     /* QHS status */
     const qhsStat = root.querySelector('#icd-qhs-status');
