@@ -103,7 +103,7 @@
     color:#0070F2; background:#EEF4FF; padding:3px 10px; border-radius:20px;
   }
   .sparkline-row {
-    display:grid; grid-template-columns:220px 1fr 120px 100px;
+    display:grid; grid-template-columns:220px 1fr 130px 110px;
     align-items:center; padding:12px 20px;
     border-bottom:1px solid #F0F2F4;
     gap:16px;
@@ -340,7 +340,7 @@ function ragStatus(ila){
 function panelChartOption(m, title){
   return {
     animation: false,
-    grid: {top:22, bottom:28, left:10, right:10, containLabel:true},
+    grid: {top:10, bottom:28, left:10, right:10, containLabel:true},
     xAxis: {
       type:'category',
       data:['ILA Accuracy %','Concur Rate %','Esc Rate %'],
