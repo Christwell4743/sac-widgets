@@ -111,7 +111,7 @@
   .sparkline-row:last-child { border-bottom:none; }
   .sparkline-row:hover { background:#FAFBFC; }
   .spark-metric { font-size:14px; color:#32363A; font-weight:500; }
-  .spark-chart  { height:44px; }
+  .spark-chart  { height:48px; min-height:48px; }
   .spark-value  { font-size:20px; font-weight:700; font-family:'72 Brand Medium','72',Arial,sans-serif; text-align:right; }
   .spark-delta  { font-size:14px; font-weight:600; text-align:right; }
 
@@ -340,27 +340,28 @@ function ragStatus(ila){
 function panelChartOption(m, title){
   return {
     animation: false,
-    grid: {top:10, bottom:28, left:10, right:10, containLabel:true},
+    grid: {top:22, bottom:30, left:'5%', right:'5%', containLabel:true},
     xAxis: {
       type:'category',
       data:['ILA Accuracy %','Concur Rate %','Esc Rate %'],
-      axisLabel:{fontSize:10, color:'#6A6D70'},
+      axisLabel:{fontSize:11, color:'#6A6D70', interval:0},
       axisLine:{lineStyle:{color:'#dde3ea'}},
-      axisTick:{show:false}
+      axisTick:{show:false},
+      boundaryGap:true
     },
-    yAxis:{show:false},
+    yAxis:{show:false, min:0, max:105},
     tooltip:{
       trigger:'axis',
       formatter:function(p){ return p[0].name+': '+p[0].value.toFixed(2)+'%'; }
     },
     series:[{
-      type:'bar', barWidth:'45%',
+      type:'bar', barWidth:'40%',
       data:[
-        {value:m.ila,        itemStyle:{color: ragColor(m.ila)}},
-        {value:m.concur_pct, itemStyle:{color:'#E67E22'}},
-        {value:parseFloat((m.esc/m.reviews*100).toFixed(2)), itemStyle:{color:'#89919A'}}
+        {value:m.ila,        itemStyle:{color: ragColor(m.ila), borderRadius:[4,4,0,0]}},
+        {value:m.concur_pct, itemStyle:{color:'#E67E22',        borderRadius:[4,4,0,0]}},
+        {value:parseFloat((m.esc/m.reviews*100).toFixed(2)), itemStyle:{color:'#89919A', borderRadius:[4,4,0,0]}}
       ],
-      label:{show:true, position:'top', fontSize:10, formatter:function(p){return p.value.toFixed(1)+'%';}}
+      label:{show:true, position:'top', fontSize:11, color:'#32363A', formatter:function(p){return p.value.toFixed(1)+'%';}}
     }]
   };
 }
@@ -369,15 +370,15 @@ function panelChartOption(m, title){
 function sparkOption(data, color){
   return {
     animation:false,
-    grid:{top:4,bottom:4,left:4,right:4},
+    grid:{top:6,bottom:6,left:6,right:6},
     xAxis:{type:'category', show:false, data:MONTHS.map(function(m){return m.name;})},
     yAxis:{type:'value', show:false, scale:true},
     series:[{
       type:'line', data:data, smooth:true,
-      lineStyle:{color:color, width:2},
+      lineStyle:{color:color, width:2.5},
       itemStyle:{color:color},
       symbol:'none',
-      areaStyle:{color:color, opacity:0.08}
+      areaStyle:{color:color, opacity:0.10}
     }]
   };
 }
@@ -517,10 +518,27 @@ function buildTable(sel){
   });
 }
 
-// ── BOOT ────────────────────────────────────────────────────────────────────
+// ── RESIZE ALL CHARTS ───────────────────────────────────────────────────────
+function resizeAll(){
+  if(chartCur)  chartCur.resize();
+  if(chartPrev) chartPrev.resize();
+  Object.keys(sparkCharts).forEach(function(k){ sparkCharts[k].resize(); });
+}
+
+// ── BOOT — delayed for SAC iframe rendering ──────────────────────────────────
 window.addEventListener('load', function(){
+  // First pass — initialize immediately
   initCharts();
   update();
+  // Second pass — resize after 300ms (SAC iframe may not be fully laid out)
+  setTimeout(function(){ resizeAll(); }, 300);
+  // Third pass — resize again after 800ms for slow connections
+  setTimeout(function(){ resizeAll(); update(); }, 800);
+});
+
+// ── HANDLE WINDOW RESIZE ────────────────────────────────────────────────────
+window.addEventListener('resize', function(){
+  resizeAll();
 });
 </script>
 </body>
