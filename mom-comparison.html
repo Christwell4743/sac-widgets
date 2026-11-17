@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MoM Deep Comparison — Invoice Capture 2026</title>
+<style>
+  /* ── RESET & BASE ── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: '72 Brand', '72', Arial, sans-serif;
+    background: #F5F6F7;
+    color: #32363A;
+    font-size: 13px;
+    min-width: 960px;
+  }
+
+  /* ── TEAM CSS CLASSES ── */
+  .dashboard-header {
+    background-color: #003B71;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  }
+  .kpi-tile {
+    background-color: #ffffff;
+    border: 1px solid #dde3ea;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  }
+  .chart-card {
+    background-color: #ffffff;
+    border: 1px solid #dde3ea;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  }
+  .kpi-tile-blue  { background:#fff; border-top:4px solid #0070F2; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.07); }
+  .kpi-tile-green { background:#fff; border-top:4px solid #1A7A4A; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.07); }
+  .kpi-tile-red   { background:#fff; border-top:4px solid #D20A0A; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.07); }
+  .narrative-bar  { background-color:#EEF4FF; border-radius:4px; border-left:4px solid #0070F2; }
+
+  /* ── LAYOUT ── */
+  .page-wrap { padding: 16px; max-width: 1880px; margin: 0 auto; }
+
+  /* ── SUBHEADER ── */
+  .subheader {
+    background:#003B71; border-radius:6px;
+    padding: 10px 24px;
+    display: flex; align-items:center; justify-content:space-between;
+    margin-bottom: 12px;
+  }
+  .subheader-left  { color:#FFFFFF; font-size:13px; font-weight:600; }
+  .subheader-right { color:#89D1FF; font-size:12px; }
+
+  /* ── FILTER BAR ── */
+  .filter-bar {
+    background:#fff; border:1px solid #dde3ea; border-radius:8px;
+    padding: 10px 20px;
+    display:flex; align-items:center; gap:16px;
+    margin-bottom:16px;
+    flex-wrap:wrap;
+  }
+  .filter-label { font-size:12px; color:#6A6D70; font-weight:600; }
+  .filter-select {
+    border:1px solid #0070F2; border-radius:20px;
+    padding:5px 14px; font-size:12px; font-family:inherit;
+    color:#0070F2; font-weight:600; cursor:pointer;
+    background:#EEF4FF;
+  }
+  .filter-select:focus { outline:none; }
+
+  /* ── PANELS ROW ── */
+  .panels-row {
+    display:grid; grid-template-columns:1fr 1fr;
+    gap:16px; margin-bottom:16px;
+  }
+  .panel { border-radius:8px; overflow:hidden; }
+  .panel-current { border:2px solid #0070F2; background:#fff; }
+  .panel-previous { border:2px solid #8C9CB0; background:#fff; }
+  .panel-header {
+    padding:10px 16px;
+    display:flex; align-items:center; gap:8px;
+    font-size:13px; font-weight:700;
+  }
+  .panel-header-current { background:#EEF4FF; color:#0070F2; }
+  .panel-header-previous { background:#F5F6F7; color:#4A5568; }
+  .panel-kpis {
+    display:grid; grid-template-columns:1fr 1fr 1fr;
+    gap:1px; background:#dde3ea;
+  }
+  .panel-kpi {
+    background:#fff; padding:16px;
+    display:flex; flex-direction:column; gap:4px;
+  }
+  .panel-kpi-label { font-size:10px; color:#6A6D70; text-transform:uppercase; letter-spacing:0.8px; }
+  .panel-kpi-value { font-size:26px; font-weight:700; font-family:'72 Brand Medium','72',Arial,sans-serif; line-height:1; }
+  .panel-kpi-sub   { font-size:11px; color:#89919A; }
+  .val-blue  { color:#0070F2; }
+  .val-green { color:#1A7A4A; }
+  .val-red   { color:#D20A0A; }
+  .val-gray  { color:#32363A; }
+  .val-orange{ color:#E67E22; }
+
+  /* ── VARIANCE CARDS ── */
+  .variance-row {
+    display:grid; grid-template-columns:1fr 1fr 1fr 1fr;
+    gap:12px; margin-bottom:16px;
+  }
+  .var-card {
+    background:#fff; border-radius:8px;
+    border:1px solid #dde3ea;
+    box-shadow:0 2px 8px rgba(0,0,0,0.07);
+    padding:14px 16px;
+  }
+  .var-card-label { font-size:10px; color:#6A6D70; text-transform:uppercase; letter-spacing:0.8px; margin-bottom:6px; }
+  .var-card-border-left-red    { border-left:4px solid #D20A0A; }
+  .var-card-border-left-green  { border-left:4px solid #1A7A4A; }
+  .var-card-border-left-orange { border-left:4px solid #E67E22; }
+  .var-card-border-left-blue   { border-left:4px solid #0070F2; }
+  .var-value { font-size:24px; font-weight:700; font-family:'72 Brand Medium','72',Arial,sans-serif; line-height:1.1; }
+  .var-sub   { font-size:11px; color:#89919A; margin-top:4px; }
+  .arrow-up   { color:#1A7A4A; }
+  .arrow-down { color:#D20A0A; }
+
+  /* ── FULL YEAR TABLE ── */
+  .table-card {
+    background:#fff; border:1px solid #dde3ea; border-radius:8px;
+    box-shadow:0 2px 8px rgba(0,0,0,0.05);
+    overflow:hidden; margin-bottom:16px;
+  }
+  .table-header {
+    padding:14px 20px;
+    display:flex; align-items:center; justify-content:space-between;
+    border-bottom:1px solid #dde3ea;
+  }
+  .table-title { font-size:14px; font-weight:700; color:#32363A; }
+  .table-badge {
+    font-size:10px; font-weight:700; text-transform:uppercase;
+    letter-spacing:1px; color:#0070F2; background:#EEF4FF;
+    padding:3px 10px; border-radius:20px;
+  }
+  .perf-table { width:100%; border-collapse:collapse; }
+  .perf-table th {
+    background:#F5F6F7; padding:10px 14px;
+    font-size:11px; font-weight:700; color:#6A6D70;
+    text-transform:uppercase; letter-spacing:0.8px;
+    text-align:left; border-bottom:2px solid #dde3ea;
+    white-space:nowrap;
+  }
+  .perf-table td {
+    padding:10px 14px; border-bottom:1px solid #F0F2F4;
+    font-size:12px; vertical-align:middle;
+    white-space:nowrap;
+  }
+  .perf-table tr:hover td { background:#FAFBFC; }
+  .perf-table tr.selected-row td { background:#EEF4FF; font-weight:600; }
+  .delta-pos { color:#1A7A4A; font-weight:600; }
+  .delta-neg { color:#D20A0A; font-weight:600; }
+  .delta-base{ color:#89919A; font-style:italic; }
+  .status-badge {
+    display:inline-block; padding:3px 10px;
+    border-radius:20px; font-size:11px; font-weight:700;
+    text-transform:uppercase; letter-spacing:0.5px;
+  }
+  .status-blue   { background:#EEF4FF; color:#0070F2; }
+  .status-green  { background:#EBFAF0; color:#1A7A4A; }
+  .status-amber  { background:#FFF3E5; color:#E67E22; }
+  .status-red    { background:#FFEBEB; color:#D20A0A; }
+
+  /* ── FOOTER ── */
+  .footer {
+    text-align:center; font-size:11px; color:#89919A;
+    padding:12px; border-top:1px solid #dde3ea;
+    background:#fff; border-radius:0 0 8px 8px;
+  }
+</style>
+</head>
+<body>
+<div class="page-wrap">
+
+  <!-- SUB-HEADER -->
+  <div class="subheader">
+    <div class="subheader-left">&#128197; Month-on-Month Deep Comparison</div>
+    <div class="subheader-right">Invoice Capture &nbsp;&middot;&nbsp; IC_COMBINED_AM2 &nbsp;&middot;&nbsp; SAP Datasphere EU10</div>
+  </div>
+
+  <!-- FILTER BAR -->
+  <div class="filter-bar">
+    <span class="filter-label">Compare:</span>
+    <select class="filter-select" id="monthSelect" onchange="update()">
+      <option value="2">February 2026</option>
+      <option value="3">March 2026</option>
+      <option value="4">April 2026</option>
+      <option value="5">May 2026</option>
+      <option value="6">June 2026</option>
+      <option value="7">July 2026</option>
+      <option value="8">August 2026</option>
+      <option value="9">September 2026</option>
+      <option value="10" selected>October 2026</option>
+    </select>
+    <span class="filter-label" style="margin-left:8px;">vs Previous Month</span>
+  </div>
+
+  <!-- SIDE-BY-SIDE PANELS -->
+  <div class="panels-row">
+    <!-- CURRENT MONTH -->
+    <div class="panel panel-current">
+      <div class="panel-header panel-header-current">
+        &#128197; <span id="currentLabel">Current Month — October 2026</span>
+      </div>
+      <div class="panel-kpis">
+        <div class="panel-kpi">
+          <div class="panel-kpi-label">ILA Accuracy</div>
+          <div class="panel-kpi-value" id="cur-ila" style="color:#0070F2;">98.74%</div>
+          <div class="panel-kpi-sub" id="cur-ila-sub">55,300 reviews</div>
+        </div>
+        <div class="panel-kpi">
+          <div class="panel-kpi-label">Escalations</div>
+          <div class="panel-kpi-value val-gray" id="cur-esc">638</div>
+          <div class="panel-kpi-sub" id="cur-esc-sub">0.01% rate</div>
+        </div>
+        <div class="panel-kpi">
+          <div class="panel-kpi-label">SAP Concur Rate</div>
+          <div class="panel-kpi-value val-red" id="cur-concur">60.50%</div>
+          <div class="panel-kpi-sub" id="cur-concur-sub">386 confirmed</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PREVIOUS MONTH -->
+    <div class="panel panel-previous">
+      <div class="panel-header panel-header-previous">
+        &#128197; <span id="prevLabel">Previous Month — September 2026</span>
+      </div>
+      <div class="panel-kpis">
+        <div class="panel-kpi">
+          <div class="panel-kpi-label">ILA Accuracy</div>
+          <div class="panel-kpi-value" id="prev-ila" style="color:#0070F2;">98.39%</div>
+          <div class="panel-kpi-sub" id="prev-ila-sub">55,610 reviews</div>
+        </div>
+        <div class="panel-kpi">
+          <div class="panel-kpi-label">Escalations</div>
+          <div class="panel-kpi-value val-gray" id="prev-esc">928</div>
+          <div class="panel-kpi-sub" id="prev-esc-sub">0.02% rate</div>
+        </div>
+        <div class="panel-kpi">
+          <div class="panel-kpi-label">SAP Concur Rate</div>
+          <div class="panel-kpi-value val-red" id="prev-concur">63.69%</div>
+          <div class="panel-kpi-sub" id="prev-concur-sub">591 confirmed</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VARIANCE CARDS -->
+  <div class="variance-row">
+    <div class="var-card var-card-border-left-blue" id="vc-ila">
+      <div class="var-card-label">Accuracy MoM</div>
+      <div class="var-value arrow-up" id="vc-ila-val">&#9650; +0.35pp</div>
+      <div class="var-sub" id="vc-ila-sub">Oct 98.74% vs Sep 98.39%</div>
+    </div>
+    <div class="var-card var-card-border-left-red" id="vc-concur">
+      <div class="var-card-label">SAP Concur Rate MoM</div>
+      <div class="var-value arrow-down" id="vc-concur-val">&#9660; -3.19pp</div>
+      <div class="var-sub" id="vc-concur-sub">Oct 60.50% vs Sep 63.69%</div>
+    </div>
+    <div class="var-card var-card-border-left-green" id="vc-esc">
+      <div class="var-card-label">Escalations MoM</div>
+      <div class="var-value arrow-down" id="vc-esc-val">&#9660; -290</div>
+      <div class="var-sub" id="vc-esc-sub">Fewer escalations this month</div>
+    </div>
+    <div class="var-card var-card-border-left-orange" id="vc-reviews">
+      <div class="var-card-label">Reviews MoM</div>
+      <div class="var-value" id="vc-reviews-val" style="color:#E67E22;">&#9660; -310</div>
+      <div class="var-sub" id="vc-reviews-sub">Oct 55,300 vs Sep 55,610</div>
+    </div>
+  </div>
+
+  <!-- FULL YEAR TABLE -->
+  <div class="table-card">
+    <div class="table-header">
+      <div class="table-title">&#128202; Full Year MoM Performance Table — 2026</div>
+      <div class="table-badge">Table &middot; Difference From &middot; Thresholds</div>
+    </div>
+    <table class="perf-table" id="perfTable">
+      <thead>
+        <tr>
+          <th>Month</th>
+          <th>Reviews</th>
+          <th>ILA Accuracy %</th>
+          <th>ACC MoM (Diff)</th>
+          <th>Escalations</th>
+          <th>SAP Concur</th>
+          <th>Concur MoM (Diff)</th>
+          <th>Concur Rate %</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+    <div class="footer">
+      Invoice Capture Operations &nbsp;&middot;&nbsp; IC_COMBINED_AM2 &nbsp;&middot;&nbsp; SAP Datasphere EU10 &nbsp;&middot;&nbsp; Jan–Oct 2026
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ── DATA ──────────────────────────────────────────────────────────
+var MONTHS = [
+  { key:1,  name:'January',   ila:98.18, reviews:65147,  esc:467,  concur_pct:61.67, concur_cnt:288  },
+  { key:2,  name:'February',  ila:98.25, reviews:71912,  esc:789,  concur_pct:56.65, concur_cnt:447  },
+  { key:3,  name:'March',     ila:98.04, reviews:67159,  esc:1263, concur_pct:47.43, concur_cnt:599  },
+  { key:4,  name:'April',     ila:97.83, reviews:73961,  esc:600,  concur_pct:67.83, concur_cnt:407  },
+  { key:5,  name:'May',       ila:98.18, reviews:88638,  esc:740,  concur_pct:72.16, concur_cnt:534  },
+  { key:6,  name:'June',      ila:97.92, reviews:41424,  esc:944,  concur_pct:82.52, concur_cnt:779  },
+  { key:7,  name:'July',      ila:97.61, reviews:17746,  esc:1079, concur_pct:63.58, concur_cnt:686  },
+  { key:8,  name:'August',    ila:98.00, reviews:46450,  esc:657,  concur_pct:74.89, concur_cnt:492  },
+  { key:9,  name:'September', ila:98.39, reviews:55610,  esc:928,  concur_pct:63.69, concur_cnt:591  },
+  { key:10, name:'October',   ila:98.74, reviews:55300,  esc:638,  concur_pct:60.50, concur_cnt:386  }
+];
+
+function fmt(n){ return n.toLocaleString('en-US'); }
+function fmtPct(n){ return n.toFixed(2)+'%'; }
+function ragClass(ila){
+  if(ila>=97) return 'val-blue';
+  if(ila>=95) return 'val-green';
+  if(ila>=90) return 'val-orange';
+  return 'val-red';
+}
+function ragStatus(ila){
+  if(ila>=97) return '<span class="status-badge status-blue">BLUE</span>';
+  if(ila>=95) return '<span class="status-badge status-green">GREEN</span>';
+  if(ila>=90) return '<span class="status-badge status-amber">AMBER</span>';
+  return '<span class="status-badge status-red">RED</span>';
+}
+
+function update(){
+  var sel = parseInt(document.getElementById('monthSelect').value);
+  var cur  = MONTHS[sel-1];
+  var prev = MONTHS[sel-2];
+
+  // Labels
+  document.getElementById('currentLabel').textContent = 'Current Month — '+cur.name+' 2026';
+  document.getElementById('prevLabel').textContent    = 'Previous Month — '+prev.name+' 2026';
+
+  // Current panel
+  var ilaColorCur = cur.ila>=97?'#0070F2':cur.ila>=95?'#1A7A4A':cur.ila>=90?'#E67E22':'#D20A0A';
+  document.getElementById('cur-ila').style.color = ilaColorCur;
+  document.getElementById('cur-ila').textContent = fmtPct(cur.ila);
+  document.getElementById('cur-ila-sub').textContent = fmt(cur.reviews)+' reviews';
+  document.getElementById('cur-esc').textContent = fmt(cur.esc);
+  document.getElementById('cur-esc-sub').textContent = (cur.esc/cur.reviews*100).toFixed(2)+'% rate';
+  document.getElementById('cur-concur').textContent = fmtPct(cur.concur_pct);
+  document.getElementById('cur-concur-sub').textContent = fmt(cur.concur_cnt)+' confirmed';
+  document.getElementById('cur-concur').className = 'panel-kpi-value '+(cur.concur_pct>70?'val-red':'val-orange');
+
+  // Previous panel
+  var ilaColorPrev = prev.ila>=97?'#0070F2':prev.ila>=95?'#1A7A4A':prev.ila>=90?'#E67E22':'#D20A0A';
+  document.getElementById('prev-ila').style.color = ilaColorPrev;
+  document.getElementById('prev-ila').textContent = fmtPct(prev.ila);
+  document.getElementById('prev-ila-sub').textContent = fmt(prev.reviews)+' reviews';
+  document.getElementById('prev-esc').textContent = fmt(prev.esc);
+  document.getElementById('prev-esc-sub').textContent = (prev.esc/prev.reviews*100).toFixed(2)+'% rate';
+  document.getElementById('prev-concur').textContent = fmtPct(prev.concur_pct);
+  document.getElementById('prev-concur-sub').textContent = fmt(prev.concur_cnt)+' confirmed';
+  document.getElementById('prev-concur').className = 'panel-kpi-value '+(prev.concur_pct>70?'val-red':'val-orange');
+
+  // Variance cards
+  var ilaDelta    = (cur.ila - prev.ila).toFixed(2);
+  var concurDelta = (cur.concur_pct - prev.concur_pct).toFixed(2);
+  var escDelta    = cur.esc - prev.esc;
+  var revDelta    = cur.reviews - prev.reviews;
+
+  // ILA variance
+  var ilaGood = parseFloat(ilaDelta)>=0;
+  document.getElementById('vc-ila-val').className = 'var-value '+(ilaGood?'arrow-up':'arrow-down');
+  document.getElementById('vc-ila-val').textContent = (ilaGood?'▲ +':'▼ ')+ilaDelta+'pp';
+  document.getElementById('vc-ila-sub').textContent = cur.name+' '+fmtPct(cur.ila)+' vs '+prev.name+' '+fmtPct(prev.ila);
+  document.getElementById('vc-ila').className = 'var-card '+(ilaGood?'var-card-border-left-blue':'var-card-border-left-red');
+
+  // Concur variance (lower is better)
+  var concurGood = parseFloat(concurDelta)<=0;
+  document.getElementById('vc-concur-val').className = 'var-value '+(concurGood?'arrow-down':'arrow-up');
+  document.getElementById('vc-concur-val').style.color = concurGood?'#1A7A4A':'#D20A0A';
+  document.getElementById('vc-concur-val').textContent = (parseFloat(concurDelta)>=0?'▲ +':'▼ ')+concurDelta+'pp';
+  document.getElementById('vc-concur-sub').textContent = cur.name+' '+fmtPct(cur.concur_pct)+' vs '+prev.name+' '+fmtPct(prev.concur_pct);
+
+  // Escalation variance (lower is better)
+  var escGood = escDelta<=0;
+  document.getElementById('vc-esc-val').className = 'var-value '+(escGood?'arrow-down':'arrow-up');
+  document.getElementById('vc-esc-val').style.color = escGood?'#1A7A4A':'#D20A0A';
+  document.getElementById('vc-esc-val').textContent = (escDelta>=0?'▲ +':'▼ ')+fmt(escDelta);
+  document.getElementById('vc-esc-sub').textContent = escGood?'Fewer escalations this month':'More escalations this month';
+
+  // Reviews variance
+  document.getElementById('vc-reviews-val').textContent = (revDelta>=0?'▲ +':'▼ ')+fmt(revDelta);
+  document.getElementById('vc-reviews-val').style.color = '#6A6D70';
+  document.getElementById('vc-reviews-sub').textContent = cur.name+' '+fmt(cur.reviews)+' vs '+prev.name+' '+fmt(prev.reviews);
+
+  // Rebuild table
+  buildTable(sel);
+}
+
+function buildTable(selectedIdx){
+  var tbody = document.getElementById('tableBody');
+  tbody.innerHTML = '';
+  for(var i=0; i<MONTHS.length; i++){
+    var m = MONTHS[i];
+    var isSelected = (m.key === parseInt(document.getElementById('monthSelect').value));
+    var momIla = i===0 ? '— Base' : ((m.ila - MONTHS[i-1].ila)>=0 ?
+        '<span class="delta-pos">▲ +'+(m.ila-MONTHS[i-1].ila).toFixed(2)+'pp</span>' :
+        '<span class="delta-neg">▼ '+(m.ila-MONTHS[i-1].ila).toFixed(2)+'pp</span>');
+    var momConcur = i===0 ? '— Base' : ((m.concur_cnt - MONTHS[i-1].concur_cnt)>=0 ?
+        '<span class="delta-neg">▲ +'+(m.concur_cnt-MONTHS[i-1].concur_cnt)+'</span>' :
+        '<span class="delta-pos">▼ '+(m.concur_cnt-MONTHS[i-1].concur_cnt)+'</span>');
+
+    var ilaClass = ragClass(m.ila);
+    var tr = document.createElement('tr');
+    if(isSelected) tr.className = 'selected-row';
+    tr.innerHTML =
+      '<td><strong>'+m.name+'</strong>'+(isSelected?' &#9664;':'')+'</td>'+
+      '<td>'+fmt(m.reviews)+'</td>'+
+      '<td class="'+ilaClass+'"><strong>'+fmtPct(m.ila)+'</strong></td>'+
+      '<td>'+(i===0?'<span class="delta-base">— Base</span>':momIla)+'</td>'+
+      '<td>'+fmt(m.esc)+'</td>'+
+      '<td>'+fmt(m.concur_cnt)+'</td>'+
+      '<td>'+(i===0?'<span class="delta-base">— Base</span>':momConcur)+'</td>'+
+      '<td>'+fmtPct(m.concur_pct)+'</td>'+
+      '<td>'+ragStatus(m.ila)+'</td>';
+    tbody.appendChild(tr);
+  }
+}
+
+// Init
+update();
+</script>
+</body>
+</html>
