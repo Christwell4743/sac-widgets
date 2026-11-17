@@ -1,0 +1,62 @@
+{
+  "id": "com.custom.icdashboard",
+  "version": "1.0.1",
+  "name": "IC Executive Dashboard",
+  "description": "Invoice Capture Executive Command Center — data-bound widget. Renders live narrative, ECharts gauge, KPI cards, trend chart and escalation breakdown from IC_COMBINED_AM2 measures.",
+  "newInstancePrefix": "ICDashboard",
+  "vendor": "Invoice Capture Operations",
+
+  "webcomponents": [
+    {
+      "kind": "main",
+      "tag": "com-custom-icdashboard",
+      "url": "https://cdn.jsdelivr.net/gh/Christwell4743/sac-widgets@main/ic-dashboard.js",
+      "integrity": "",
+      "ignoreIntegrity": true
+    }
+  ],
+
+  "properties": {
+    "ila": {
+      "type": "number",
+      "description": "Invoice Level Accuracy % (fallback)",
+      "default": 98.15
+    },
+    "concurRate": {
+      "type": "number",
+      "description": "SAP Concur Error Rate % (fallback)",
+      "default": 64.40
+    },
+    "reviews": {
+      "type": "number",
+      "description": "Total Quality Review Count (fallback)",
+      "default": 585226
+    },
+    "escalations": {
+      "type": "number",
+      "description": "Total Escalation Count (fallback)",
+      "default": 8143
+    },
+    "eoy": {
+      "type": "number",
+      "description": "EOY Forecast ILA % (fallback)",
+      "default": 98.15
+    }
+  },
+
+  "methods": {},
+
+  "events": {},
+
+  "dataBindings": {
+    "dashboardData": {
+      "feeds": [
+        {
+          "id": "measures",
+          "description": "Dashboard Measures — bind Invoice Level Accuracy Pct, SAP Concur Error Rate Pct, Quality Review Count, Escalation Review Count, EOY Forecast RLA",
+          "type": "mainStructureMember"
+        }
+      ]
+    }
+  }
+}
